@@ -130,13 +130,12 @@ HTMLApi.prototype.showModal = function(body,opt,cb)
   this._reqModal = modal;
   $('.modal-dialog',modal).css('width',opt.width||'750px');
   this.setModalActions(opt.actions);
-  modal.bind('keydown', this.onKeys);
-  modal.modal({backdrop: 'static', keyboard: false});
-
+  modal.on('keydown', this.onKeys);
   if ( cb )
   {
-    modal.on('shown.bs.modal', function() { cb(modal); });
+    modal.one('pasturestack:modal:shown', function() { cb(modal); });
   }
+  PastureStackUi.modal.show(modal, {backdrop: 'static'});
 
 }
 
@@ -171,11 +170,11 @@ HTMLApi.prototype.hideModal = function() {
   if ( !old )
     return;
 
-  old.unbind('keydown', self.onKeys);
-  old.modal('hide');
-  old.on('hidden.bs.modal', function() {
+  old.off('keydown', self.onKeys);
+  old.one('pasturestack:modal:hidden', function() {
     old.remove();
   });
+  PastureStackUi.modal.hide(old);
 }
 
 HTMLApi.prototype.setModalActions = function(actions)
@@ -406,11 +405,12 @@ HTMLApi.prototype.render = function(cb)
   };
 
   document.body.innerHTML = Handlebars.templates['body.hbs'](tpl);
+  window.PastureStackI18n.syncSelectors();
   $('#json').html(jsonHtml);
 
   this._addCollapsers();
 
-  $('#filters').html('<span class="inactive">Not available</span>');
+  $('#filters').html('<span class="inactive">' + window.PastureStackI18n.text('notAvailable') + '</span>');
 
   return async.nextTick(cb);
 }
@@ -911,7 +911,7 @@ HTMLApi.prototype.ajax = function(method, url, body, cb)
     error: function(jqxhr, msg, exception) {
       var body = null;
       try {
-        body = jQuery.parseJSON(jqxhr.responseText);
+        body = JSON.parse(jqxhr.responseText);
       }
       catch (e) {
         body = jqxhr.responseText;
@@ -1341,8 +1341,6 @@ HTMLApi.prototype.editOrActionShown = function() {
   // Make the null checkboxes clear the field, and field clear null
   $(htmlapi._reqModal).on('keyup','input[type="text"], input[type="number"], input[type="password"], textarea', onChange);
   $(htmlapi._reqModal).on('change','input[type="text"], input[type="number"], input[type="password"], textarea', onChange);
-
-  $('.tip').tooltip({placement: 'right'});
 
   function onChange(event) {
     if ( event.keyCode < 32 )

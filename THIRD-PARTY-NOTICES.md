@@ -1,0 +1,40 @@
+# Third-party notices
+
+This file is a navigation aid and does not replace the applicable license
+texts, notices, or copyright statements.
+
+## Bootstrap static layout assets
+
+The embedded release retains reviewed CSS and font files from Bootstrap 3.4.1
+to preserve the inherited layout contract. Copyright remains with Twitter,
+Inc. and the respective contributors. The files are licensed under the terms
+distributed with the upstream package; see
+[`vendor/bootstrap-3.4.1/LICENSE`](vendor/bootstrap-3.4.1/LICENSE) and
+[`vendor/bootstrap-3.4.1/NOTICE.md`](vendor/bootstrap-3.4.1/NOTICE.md).
+
+The CSS includes Normalize.css 3.0.3 by Nicolas Gallagher and Jonathan Neal;
+its MIT terms are retained in
+[`vendor/bootstrap-3.4.1/NORMALIZE-LICENSE`](vendor/bootstrap-3.4.1/NORMALIZE-LICENSE).
+
+No Bootstrap JavaScript is included in the source dependency graph or release
+artifact. PastureStack claims authorship only for its own compatibility code
+and other subsequent modifications.
+
+## Executable browser libraries
+
+- jQuery 3.7.1, copyright OpenJS Foundation and other contributors, MIT.
+  The complete text is emitted as `licenses/jquery-3.7.1/LICENSE.txt`.
+- Handlebars Runtime 4.7.9, copyright Yehuda Katz and contributors, MIT.
+  The complete text is emitted as `licenses/handlebars-4.7.9/LICENSE`.
+- async 0.9.0, copyright Caolan McMahon, MIT. The retained text is
+  [`vendor/licenses/LICENSE-async-0.9.0`](vendor/licenses/LICENSE-async-0.9.0).
+- jquery-scrollintoview 1.8, copyright Robert Koritnik, MIT. The retained text
+  is [`vendor/licenses/LICENSE-jquery-scrollintoview-1.8`](vendor/licenses/LICENSE-jquery-scrollintoview-1.8).
+- JSONFormatter derives from Benjamin Hollis's jsonview code, MIT. The retained
+  text is [`vendor/licenses/LICENSE-jsonformatter-2009`](vendor/licenses/LICENSE-jsonformatter-2009).
+- `json2.js` dated 2011-10-19 is marked Public Domain by its upstream author;
+  the retained notice is [`vendor/licenses/NOTICE-json2`](vendor/licenses/NOTICE-json2).
+
+The unminified `ui.js` also retains the upstream file headers. The independent
+license copies above remain in the same archive because minification removes
+comments from `ui.min.js`.

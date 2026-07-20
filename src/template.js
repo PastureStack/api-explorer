@@ -1,5 +1,9 @@
 Handlebars.templates = Handlebars.templates || {};
 
+Handlebars.registerHelper('t', function(key) {
+  return window.PastureStackI18n.text(key);
+});
+
 Handlebars.registerHelper('ifEqual', function(a, b, options) {
   if ( a == b )
   {

@@ -1,4 +1,4 @@
-<b>cURL command line:</b>
+<b>{{t "curlCommand"}}:</b>
 <br/>
 <div id="curl" class="well">
   curl 
@@ -24,7 +24,7 @@
     '{{baseUrl}}{{path}}'
 </div>
 
-<b>HTTP Request:</b><br/>
+<b>{{t "httpRequest"}}:</b><br/>
 <div id="request" class="well">
   HTTP/1.1 {{method}} {{path}}<br/>
   Host: {{host}}<br/>
@@ -63,9 +63,9 @@
   {{/if}}
 </div>
 
-<b>HTTP Response:</b><br/>
+<b>{{t "httpResponse"}}:</b><br/>
 <div id="response" class="well">
-  <div id="notsent" class="inactive" style="padding: 20px; text-align: center;">Click below to send request.</div>
-  <div id="waiting" class="inactive" style="padding: 20px; text-align: center; display: none;">Waiting for response...</div>
+  <div id="notsent" class="inactive" style="padding: 20px; text-align: center;">{{t "clickToSend"}}</div>
+  <div id="waiting" class="inactive" style="padding: 20px; text-align: center; display: none;">{{t "waiting"}}</div>
   <div id="result" style="display: none;"></div>
 </div>

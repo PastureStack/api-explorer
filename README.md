@@ -1,88 +1,34 @@
-# api-ui
+# PastureStack API Explorer
 
-An embedded UI for any service that implements the Rancher API spec.
+API Explorer is an embeddable browser interface for services that implement the preserved API schema and HTML discovery contract.
 
-Integrating with your API
--------
-See [HTML UI](https://github.com/rancherio/api-spec/blob/master/specification.md#html-ui) in the API specification.  This also includes a link to the latest version hosted on our CDN.
+PastureStack is an independent community effort to preserve, audit, and modernize the Rancher 1.6 ecosystem. It is not affiliated with or endorsed by Rancher Labs or SUSE.
 
-## Install
+**Upstream:** [`rancher/api-ui`](https://github.com/rancher/api-ui). This GitHub fork preserves upstream history, authorship, dates, tags, licenses, and dependency notices. PastureStack maintenance is consolidated into one commit after the preserved upstream boundary.
 
-```bash
-git clone https://github.com/rancherio/api-ui
-cd api-ui
-yarn install
+## Project status
+
+This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
+
+The Server consumes the immutable `v1.1.15` release artifact. This repository does not publish a standalone CDN or npm package, and the explorer is supported only as a Server-embedded compatibility interface.
+
+## Build locally
+
+```sh
+npm ci --no-audit --no-fund
+npm run ci
+npm run build
 ```
 
-## Usage
+The tracked npm lockfile is the executable dependency contract. The build emits a deterministic `dist/1.1.15.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact.
 
-### Compiling into stand-alone CSS and JavaScript files
-This will write files to `./dist/{version}/`, suitable for publishing to a CDN.
+Bootstrap JavaScript is not shipped. The artifact retains only reviewed,
+attributed Bootstrap 3.4.1 CSS and font files for the inherited layout, plus a
+small first-party modal and dropdown compatibility layer. See
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for provenance and terms.
 
-```bash
-  ./scripts/build
-```
+Set `window.pasturestackLocale` to `en-US` or `zh-TW` before loading the bundle, or use the built-in language selector. API resources, field names, enum values, identifiers, and remote errors are not translated. See [COMPATIBILITY.md](COMPATIBILITY.md), [SECURITY.md](SECURITY.md), and [ORIGIN.md](ORIGIN.md).
 
-### Integrating with an API
+## License and attribution
 
-Wrap JSON responses with a bit of HTML (and return `Content-Type: text/html`):
-```html
-<!DOCTYPE html>
-<!-- If you are reading this, there is a good chance you would prefer sending an
-"Accept: application/json" header and receiving actual JSON responses. -->
-<link rel="stylesheet" type="text/css" href="//releases.rancher.com/api-ui/1.0.4/ui.css" />
-<script src="//releases.rancher.com/api-ui/1.0.4/ui.js"></script>
-<script>
-var schemas = "http://url-to-your-api/v1/schemas";
-var data = {
-  /* ... JSON response ... */
-};
-/* ... additional options globals, see below ... */
-</script>
-```
-
-### Options
-
-Several options can be configured through additional globals:
-
-```javascript
-// Adds a documentation link in the navigation area
-var docsPage = "http://url-to-your-docs/site";
-
-// URL to a documentation JSON file to add descriptions for types and fields.
-var docsJson = "http://url-to-your-docs.json";
-
-// Displays the username who is logged in next to the Log Out link so the user knows who you think they are
-var user = "jsmith";
-
-// Disables the display of the logout link
-var logout = false; // Disable the display of the Log Out link
-
-// Replaces the default "${API_ACCESS_KEY}:${API_SECRET_KEY}" string when displaying cURL commands.
-//   setting to false will omit the user/pass option from the command entirely.
-var curlUser = "some:thing";
-
-// Overrides the location where bootstrap is loaded from ('/css/boostrap.min.css' and '/js/bootstrap.min.js' will be appended to this)
-var bootstrap = "http://url/to/bootstrap/version";
-```
-
-## Bugs & Issues
-Please submit bugs and issues to [rancher/dashboard](//github.com/rancher/dashboard/issues) with a title starting with `[API UI] `.
-
-Or just [click here](//github.com/rancher/dashboard/issues/new?title=%5BAPI%20UI%5D%20) to create a new issue.
-
-## License
-
-Copyright (c) 2014-2026 [SUSE](https://www.suse.com)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+The inherited project remains licensed under [Apache License 2.0](LICENSE.txt). Copyright and attribution for inherited work and bundled dependencies remain with their respective authors and contributors. PastureStack contributors claim authorship only for their own changes.

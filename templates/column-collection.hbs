@@ -1,17 +1,17 @@
-<div class="column-header">Collection</div>
+<div class="column-header">{{t "collection"}}</div>
 <ul class="column-body">
   <li>
-    <div class="section-header">&#9660;Links</div>
+    <div class="section-header">&#9660;{{t "links"}}</div>
     {{>column-links.hbs}}
   </li>
 
   <li>
-    <div class="section-header">&#9660;Data</div>
+    <div class="section-header">&#9660;{{t "data"}}</div>
     <ul class="collection-data">
     {{#each data}}
       <li class="row" data-id="{{this.id}}" data-self="{{this.links.self}}">{{displayName this}}</li>
     {{else}}
-      <div class="muted"><i>None</i></div>
+      <div class="muted"><i>{{t "none"}}</i></div>
     {{/each}}
     </ul>
   </li>

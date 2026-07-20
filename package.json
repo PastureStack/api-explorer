@@ -1,31 +1,31 @@
 {
-  "name": "api-ui",
-  "version": "1.1.11",
-  "description": "Embedded UI for any service that implements the Rancher API spec",
-  "author": "SUSE",
+  "name": "@pasturestack/api-explorer",
+  "version": "1.1.15",
+  "private": true,
+  "description": "Embedded PastureStack explorer for compatible API services",
+  "author": "Original contributors and PastureStack maintainers",
   "license": "Apache-2.0",
-  "homepage": "http://github.com/rancherio/api-ui",
-  "bugs": "http://github.com/rancherio/dashboard/issues",
+  "homepage": "https://github.com/PastureStack/api-explorer",
+  "bugs": "https://github.com/PastureStack/api-explorer/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rancherio/api-ui.git"
+    "url": "https://github.com/PastureStack/api-explorer.git"
   },
-  "engine": {
+  "engines": {
     "node": ">= 24"
   },
   "scripts": {
-    "clean": "./scripts/clean",
-    "build": "./scripts/build",
-    "upload": "./scripts/upload"
+    "clean": "bash ./scripts/clean",
+    "build": "bash ./scripts/build",
+    "ci": "bash ./scripts/ci"
   },
   "devDependencies": {
-    "clean-css-cli": "^5.6.2",
-    "sass": "1.58.3",
-    "uglify-js": "3.17.4"
+    "clean-css-cli": "5.6.3",
+    "sass": "1.99.0",
+    "uglify-js": "3.19.3"
   },
   "dependencies": {
-    "bootstrap": "3.4.1",
     "handlebars": "4.7.9",
-    "jquery": "3.6.3"
+    "jquery": "3.7.1"
   }
 }
