@@ -5,9 +5,9 @@
   {{/if}}
   <table class="fixed" width="100%">
   <tr>
-    <th>Field Name</th>
-    <th>Type</th>
-    <th width="50%">Value</th>
+    <th>{{t "fieldName"}}</th>
+    <th>{{t "type"}}</th>
+    <th width="50%">{{t "value"}}</th>
   </tr>
   {{#if typeField}}
     {{#with typeField}}
@@ -17,7 +17,7 @@
           {{name}}:
         </td>
         <td>
-          <span class="inactive">schema name</span>
+          <span class="inactive">{{t "schemaName"}}</span>
         </td>
         <td>
           {{>field.hbs}}
@@ -32,7 +32,7 @@
           {{#if required}}<span class="required">*</span>{{/if}}
           {{name}}
           {{#if description}}
-            <span class="tip" data-title="{{description}}"><i class="glyphicon glyphicon-info-sign"></i></span>
+            <span class="tip" title="{{description}}"><i class="glyphicon glyphicon-info-sign"></i></span>
           {{/if}}
         </td>
         <td>
@@ -57,12 +57,12 @@
       <td colspan="3" style="text-align: center;">
         <br/>
         {{#ifEqual mode "action"}}
-          <i>This action has no inputs</i>
+          <i>{{t "noActionInputs"}}</i>
         {{else}}
           {{#ifEqual mode "update"}}
-            <i>This resource has no fields that can be edited</i>
+            <i>{{t "noEditableFields"}}</i>
           {{else}}
-            <i>This resource has no fields that can be set</i>
+            <i>{{t "noSettableFields"}}</i>
           {{/ifEqual}}
         {{/ifEqual}}
       </td>

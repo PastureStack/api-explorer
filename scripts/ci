@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "$0")/.." && pwd)
+cd "$repo_root"
+
+bash -n scripts/build scripts/clean scripts/ci
+
+node <<'NODE'
+const fs = require('fs');
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+let failures = 0;
+function fail(code, details) {
+  failures += 1;
+  console.log(`${code}${details ? ' ' + details : ''}`);
+}
+function expect(section, name, expected) {
+  const actual = (pkg[section] || {})[name];
+  if (actual !== expected) {
+    fail('PACKAGE_VERSION_UNEXPECTED', `section=${section} package=${name} actual=${actual} expected=${expected}`);
+  }
+}
+expect('dependencies', 'jquery', '3.7.1');
+expect('dependencies', 'handlebars', '4.7.9');
+expect('devDependencies', 'sass', '1.102.0');
+expect('devDependencies', 'uglify-js', '3.19.3');
+expect('devDependencies', 'clean-css', '5.3.3');
+expect('devDependencies', 'jsdom', '29.1.1');
+for (const section of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+  if (pkg[section] && Object.prototype.hasOwnProperty.call(pkg[section], 'bootstrap')) {
+    fail('BOOTSTRAP_EXECUTABLE_PACKAGE_PRESENT', `section=${section}`);
+  }
+}
+if (pkg.version !== '1.1.16') {
+  fail('PACKAGE_RELEASE_VERSION_UNEXPECTED', `actual=${pkg.version}`);
+}
+if (!pkg.engines || pkg.engines.node !== '>= 24') {
+  fail('NODE_ENGINE_UNEXPECTED', `actual=${pkg.engines && pkg.engines.node}`);
+}
+if (!pkg.repository || pkg.repository.url !== 'https://github.com/PastureStack/api-explorer.git') {
+  fail('REPOSITORY_METADATA_UNEXPECTED');
+}
+if (pkg.name !== '@pasturestack/api-explorer') {
+  fail('PACKAGE_NAME_UNEXPECTED', `actual=${pkg.name}`);
+}
+if (failures) {
+  console.log(`failure_count=${failures}`);
+  process.exit(1);
+}
+console.log('API_EXPLORER_PACKAGE_METADATA_OK jquery=3.7.1 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
+NODE
+
+(
+  cd vendor/bootstrap-3.4.1
+  sha256sum --check SHA256SUMS
+)
+echo 'API_EXPLORER_STATIC_LAYOUT_PROVENANCE_OK bootstrap_js=0 css_and_fonts=reviewed'
+
+if grep -RInE "jQuery\.parseJSON|\.bind\(['\"]|\.unbind\(['\"]|\$\.isFunction" src vendor/*.js; then
+  echo 'JQUERY_DEPRECATED_API_STILL_PRESENT'
+  exit 1
+fi
+
+if grep -RInE \
+  "node_modules/bootstrap|bootstrap/dist/js|\.tooltip\(|\.popover\(|\.modal\(|shown\.bs\.modal|hidden\.bs\.modal|data-toggle=[\"']dropdown[\"']|data-loading-text|data-html=" \
+  scripts/build scripts/docker-patch src templates partials; then
+  echo 'BOOTSTRAP_EXECUTABLE_OR_GENERIC_DATA_API_PRESENT'
+  exit 1
+fi
+
+for marker in \
+  'src/ui-compat.js' \
+  'vendor/bootstrap-3.4.1/css/bootstrap.css' \
+  'vendor/bootstrap-3.4.1/fonts/*'; do
+  grep -Fq -- "$marker" scripts/build || {
+    echo "API_EXPLORER_BUILD_MARKER_MISSING marker=$marker"
+    exit 1
+  }
+done
+grep -Fq 'data-pasturestack-toggle="dropdown"' templates/filter.hbs
+grep -Fq "modal.one('pasturestack:modal:shown'" src/HTMLApi.js
+grep -Fq "modal.trigger('pasturestack:modal:shown')" src/ui-compat.js
+grep -Fq "modal.trigger('pasturestack:modal:hidden')" src/ui-compat.js
+echo 'API_EXPLORER_MINIMAL_INTERACTION_BOUNDARY_OK modal=first-party dropdown=first-party native_title=1'
+
+npm run test:security
+echo 'API_EXPLORER_SECURITY_REGRESSIONS_OK query_keys=isolated dom_text=escaped navigation=same_document'
+
+if grep -n -- '--source-map' scripts/build; then
+  echo 'API_EXPLORER_RELEASE_SOURCE_MAP_FLAG_PRESENT'
+  exit 1
+fi
+
+for marker in '--sort=name' '--mtime=' '--owner=0' '--group=0' '--numeric-owner' 'gzip -n'; do
+  if ! grep -Fq -- "$marker" scripts/build; then
+    echo "API_EXPLORER_REPRODUCIBLE_ARCHIVE_MARKER_MISSING marker=$marker"
+    exit 1
+  fi
+done
+grep -Fq 'export LC_ALL=C' scripts/build
+test "$(grep -Fc 'sort -z' scripts/build)" -ge 3
+grep -Fq 'chmod 0644 "./dist/${VERSION}.tar.gz"' scripts/build
+
+bash scripts/build
+version=$(node -p "require('./package.json').version")
+artifact="dist/${version}.tar.gz"
+release_dir="dist/${version}"
+test -s "$artifact"
+test -s "$release_dir/ui.js"
+test -s "$release_dir/ui.min.js"
+test -s "$release_dir/ui.css"
+test -s "$release_dir/ui.min.css"
+test -s "$release_dir/version.json"
+test -s "$release_dir/fonts/glyphicons-halflings-regular.woff2"
+test -s "$release_dir/licenses/LICENSE.txt"
+test -s "$release_dir/licenses/THIRD-PARTY-NOTICES.md"
+test -s "$release_dir/licenses/bootstrap-3.4.1/LICENSE"
+test -s "$release_dir/licenses/bootstrap-3.4.1/NORMALIZE-LICENSE"
+test -s "$release_dir/licenses/bootstrap-3.4.1/NOTICE.md"
+test -s "$release_dir/licenses/jquery-3.7.1/LICENSE.txt"
+test -s "$release_dir/licenses/handlebars-4.7.9/LICENSE"
+test -s "$release_dir/licenses/inherited-vendor/LICENSE-async-0.9.0"
+test -s "$release_dir/licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8"
+test -s "$release_dir/licenses/inherited-vendor/LICENSE-jsonformatter-2009"
+test -s "$release_dir/licenses/inherited-vendor/NOTICE-json2"
+test "$(stat -c '%a' "$artifact")" = 644
+
+if grep -E \
+  'Bootstrap v3\.4\.1|bs\.(button|tooltip|popover|modal|dropdown)|data-loading-text|data-toggle="dropdown"' \
+  "$release_dir/ui.js"; then
+  echo 'API_EXPLORER_BUILT_JAVASCRIPT_CONTAINS_REJECTED_BOOTSTRAP_RUNTIME'
+  exit 1
+fi
+grep -Fq 'PastureStackUi' "$release_dir/ui.js"
+grep -Fq 'data-pasturestack-toggle' "$release_dir/ui.js"
+grep -Fq 'url("./fonts/glyphicons-halflings-regular.woff2")' "$release_dir/ui.css"
+
+member_list=$(mktemp)
+trap 'rm -f "$member_list"' EXIT
+tar -tzf "$artifact" > "$member_list"
+if grep -E '(^/|(^|/)\.\.(/|$)|\.map$|(^|/)js/bootstrap)' "$member_list"; then
+  echo 'API_EXPLORER_RELEASE_ARCHIVE_UNSAFE_OR_REJECTED_MEMBER'
+  exit 1
+fi
+for member in \
+  './ui.min.js' \
+  './ui.min.css' \
+  './version.json' \
+  './fonts/glyphicons-halflings-regular.woff2' \
+  './licenses/LICENSE.txt' \
+  './licenses/THIRD-PARTY-NOTICES.md' \
+  './licenses/bootstrap-3.4.1/LICENSE' \
+  './licenses/bootstrap-3.4.1/NORMALIZE-LICENSE' \
+  './licenses/bootstrap-3.4.1/NOTICE.md' \
+  './licenses/jquery-3.7.1/LICENSE.txt' \
+  './licenses/handlebars-4.7.9/LICENSE' \
+  './licenses/inherited-vendor/LICENSE-async-0.9.0' \
+  './licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8' \
+  './licenses/inherited-vendor/LICENSE-jsonformatter-2009' \
+  './licenses/inherited-vendor/NOTICE-json2'; do
+  grep -Fxq "$member" "$member_list" || {
+    echo "API_EXPLORER_RELEASE_MEMBER_MISSING member=$member"
+    exit 1
+  }
+done
+
+first_sha256=$(sha256sum "$artifact" | awk '{print $1}')
+bash scripts/build
+second_sha256=$(sha256sum "$artifact" | awk '{print $1}')
+test "$first_sha256" = "$second_sha256"
+
+echo "API_EXPLORER_REPRODUCIBLE_ARCHIVE_GUARD_OK source_maps=0 canonical_tar=1 deterministic_gzip=1 canonical_text_order=1 artifact_mode=0644 sha256=${second_sha256}"
+echo "API_EXPLORER_RELEASE_GATES_OK version=${version} bootstrap_package=0 bootstrap_javascript=0 modal=first-party dropdown=first-party"
+echo 'failure_count=0'

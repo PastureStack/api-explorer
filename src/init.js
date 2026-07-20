@@ -76,7 +76,7 @@ var explorer;
 
   function apiError(err)
   {
-    document.body.innerHTML = 'Error loading UI: '+ Handlebars.Utils.escapeExpression(err);
+    document.body.innerHTML = window.PastureStackI18n.text('loadingError') + ': ' + Handlebars.Utils.escapeExpression(err);
   }
 
 })();

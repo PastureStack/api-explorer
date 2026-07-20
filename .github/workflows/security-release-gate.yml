@@ -1,0 +1,129 @@
+name: Security release gate
+
+on:
+  push:
+    branches:
+      - 'verification/api-explorer-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-explorer-security-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      TRIVY_IMAGE: aquasec/trivy:0.73.0@sha256:7cced7cae583819fc7806d4cbc0dbbc7cad18b99f7d3e235192e6da8c091045c
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.15.0'
+          cache: npm
+
+      - name: Verify source identity and lock files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          test "$(git rev-list --count 80270e0af984025b14afc61c0d0b0a4f08d968bf..HEAD)" -eq 1
+          mkdir -p evidence
+          git rev-parse HEAD > evidence/source-revision.txt
+          sha256sum package.json package-lock.json .github/workflows/*.yml > evidence/source-locks.sha256
+          node --version | tee evidence/node-version.txt
+          npm --version | tee evidence/npm-version.txt
+
+      - name: Install, test, audit, and build twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+          npm run test:security
+          npm audit --omit=dev --json > evidence/npm-audit-runtime.json
+          npm audit --json > evidence/npm-audit-all.json
+          npm run ci
+          version=$(node -p "require('./package.json').version")
+          artifact="dist/${version}.tar.gz"
+          cp "$artifact" /tmp/api-explorer-first.tar.gz
+          rm -rf dist tmp
+          npm run build
+          cmp /tmp/api-explorer-first.tar.gz "$artifact"
+          sha256sum "$artifact" > evidence/product-artifact.sha256
+          tar -tzf "$artifact" > evidence/product-members.txt
+
+      - name: Generate package SBOM
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package='@cyclonedx/cyclonedx-npm@6.0.1' -- cyclonedx-npm \
+            --output-format JSON \
+            --spec-version 1.6 \
+            --output-file evidence/api-explorer.cdx.json
+
+      - name: Scan immutable source and product
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$TRIVY_IMAGE"
+          cache="$RUNNER_TEMP/trivy-cache"
+          source_tree="$(mktemp -d)"
+          product_tree="$(mktemp -d)"
+          trap 'rm -rf "$source_tree" "$product_tree"' EXIT
+          mkdir -p "$cache" "$product_tree"
+          git archive --format=tar HEAD | tar -xf - -C "$source_tree"
+          version=$(node -p "require('./package.json').version")
+          tar -xzf "dist/${version}.tar.gz" -C "$product_tree"
+          docker run --rm -v "$cache:/root/.cache/trivy" "$TRIVY_IMAGE" image --download-db-only
+          docker run --rm -v "$source_tree:/scan:ro" -v "$PWD/evidence:/evidence" -v "$cache:/root/.cache/trivy" "$TRIVY_IMAGE" fs \
+            --skip-db-update --offline-scan --scanners vuln,secret --format json --output /evidence/source-security.json /scan
+          docker run --rm -v "$product_tree:/scan:ro" -v "$PWD/evidence:/evidence" -v "$cache:/root/.cache/trivy" "$TRIVY_IMAGE" rootfs \
+            --skip-db-update --offline-scan --scanners vuln,secret --format json --output /evidence/product-security.json /scan
+
+      - name: Enforce candidate security
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > evidence/security-summary.txt
+          for scope in source product; do
+            report="evidence/${scope}-security.json"
+            secrets=$(jq '[.Results[]?.Secrets[]?] | length' "$report")
+            critical=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' "$report")
+            high=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' "$report")
+            printf '%s_secrets=%s\n%s_critical=%s\n%s_high=%s\n' "$scope" "$secrets" "$scope" "$critical" "$scope" "$high" | tee -a evidence/security-summary.txt
+            test "$secrets" -eq 0
+            test "$critical" -eq 0
+            test "$high" -eq 0
+          done
+          jq -e '.metadata.vulnerabilities.critical == 0 and .metadata.vulnerabilities.high == 0' evidence/npm-audit-runtime.json >/dev/null
+          jq -e '.metadata.vulnerabilities.critical == 0 and .metadata.vulnerabilities.high == 0' evidence/npm-audit-all.json >/dev/null
+          jq -e '.bomFormat == "CycloneDX" and .specVersion == "1.6" and (.components | length) > 0' evidence/api-explorer.cdx.json >/dev/null
+
+      - name: Upload reviewed evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: api-explorer-security-${{ github.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 9
+
+      - name: Clean runner resources
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          docker image rm -f "$TRIVY_IMAGE" 2>/dev/null
+          docker builder prune --all --force >/dev/null 2>&1
+          rm -rf node_modules dist tmp

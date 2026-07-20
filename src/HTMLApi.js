@@ -130,13 +130,12 @@ HTMLApi.prototype.showModal = function(body,opt,cb)
   this._reqModal = modal;
   $('.modal-dialog',modal).css('width',opt.width||'750px');
   this.setModalActions(opt.actions);
-  modal.bind('keydown', this.onKeys);
-  modal.modal({backdrop: 'static', keyboard: false});
-
+  modal.on('keydown', this.onKeys);
   if ( cb )
   {
-    modal.on('shown.bs.modal', function() { cb(modal); });
+    modal.one('pasturestack:modal:shown', function() { cb(modal); });
   }
+  PastureStackUi.modal.show(modal, {backdrop: 'static'});
 
 }
 
@@ -171,11 +170,11 @@ HTMLApi.prototype.hideModal = function() {
   if ( !old )
     return;
 
-  old.unbind('keydown', self.onKeys);
-  old.modal('hide');
-  old.on('hidden.bs.modal', function() {
+  old.off('keydown', self.onKeys);
+  old.one('pasturestack:modal:hidden', function() {
     old.remove();
   });
+  PastureStackUi.modal.hide(old);
 }
 
 HTMLApi.prototype.setModalActions = function(actions)
@@ -406,11 +405,12 @@ HTMLApi.prototype.render = function(cb)
   };
 
   document.body.innerHTML = Handlebars.templates['body.hbs'](tpl);
+  window.PastureStackI18n.syncSelectors();
   $('#json').html(jsonHtml);
 
   this._addCollapsers();
 
-  $('#filters').html('<span class="inactive">Not available</span>');
+  $('#filters').html('<span class="inactive">' + window.PastureStackI18n.text('notAvailable') + '</span>');
 
   return async.nextTick(cb);
 }
@@ -715,7 +715,7 @@ HTMLApi.prototype.filterModifierChange = function(elem)
   var label = filter.find('.filter-modifier-label');
 
   input.val(elem.getAttribute('data-value'));
-  label.html(elem.getAttribute('data-label'));
+  label.text(elem.getAttribute('data-label'));
   this.modifierChange(filter);
 }
 
@@ -790,11 +790,18 @@ HTMLApi.prototype.filterApply = function(clear)
       if ( modifier == 'eq' )
         modifier = false;
 
-      query += (query ? '&' : '?') + escape(name) + (modifier ? '_'+modifier : '') + (value ? '=' + escape(value) : '');
+      query += (query ? '&' : '?') + encodeURIComponent(name) + (modifier ? '_'+encodeURIComponent(modifier) : '') + (value ? '=' + encodeURIComponent(value) : '');
     }
   }
 
-  window.location.href = window.location.href.replace(/\?.*$/,'') + query;
+  var destination = new URL(window.location.href);
+  destination.search = query;
+  this.assignLocation(destination.href);
+}
+
+HTMLApi.prototype.assignLocation = function(destination)
+{
+  window.location.assign(destination);
 }
 
 HTMLApi.prototype.filterClear = function()
@@ -911,7 +918,7 @@ HTMLApi.prototype.ajax = function(method, url, body, cb)
     error: function(jqxhr, msg, exception) {
       var body = null;
       try {
-        body = jQuery.parseJSON(jqxhr.responseText);
+        body = JSON.parse(jqxhr.responseText);
       }
       catch (e) {
         body = jqxhr.responseText;
@@ -1341,8 +1348,6 @@ HTMLApi.prototype.editOrActionShown = function() {
   // Make the null checkboxes clear the field, and field clear null
   $(htmlapi._reqModal).on('keyup','input[type="text"], input[type="number"], input[type="password"], textarea', onChange);
   $(htmlapi._reqModal).on('change','input[type="text"], input[type="number"], input[type="password"], textarea', onChange);
-
-  $('.tip').tooltip({placement: 'right'});
 
   function onChange(event) {
     if ( event.keyCode < 32 )
@@ -1878,3 +1883,6 @@ HTMLApi.prototype.setLocalCookie = function(on,min) {
     Cookie.set('css.url', base + '.css', 3650);
   }
 }
+
+if ( typeof module === 'object' && module.exports )
+  module.exports = HTMLApi;

@@ -1,21 +1,34 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "Building api-ui"
+umask 022
+export LC_ALL=C
 
-rm -rf ./dist
-rm -rf ./tmp
+echo "Building PastureStack API Explorer"
 
-mkdir -p tmp/tpl
+rm -rf ./dist ./tmp
 
-HB_EXEC=./node_modules/.bin/handlebars
+mkdir -p tmp/tpl tmp/source/templates tmp/source/partials
 
 VERSION=$(npm pkg get version | tr -d '"')
+SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH:-$(git -c safe.directory="$PWD" show -s --format=%ct HEAD)}
+case "$SOURCE_DATE_EPOCH" in
+  ''|*[!0-9]*)
+    echo "SOURCE_DATE_EPOCH must be an integer" >&2
+    exit 1
+    ;;
+esac
 echo "Version: ${VERSION}"
 echo ""
 
 echo "Installing NPM dependencies"
-npm install
+if [ -f package-lock.json ]; then
+  npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+else
+  npm install --ignore-scripts --omit=optional --no-audit --no-fund
+fi
+
+HB_EXEC=./node_modules/.bin/handlebars
 
 DIST=./dist/${VERSION}
 mkdir -p ${DIST}
@@ -23,24 +36,25 @@ mkdir -p ${DIST}
 echo "Compiling templates ..."
 
 # Compile templates
-for FILE in ./templates/*;
-do
-  NAME=$(basename $FILE)
-  ${HB_EXEC} $FILE -f ./tmp/tpl/${NAME}.js
-done
+while IFS= read -r -d '' FILE; do
+  NAME=$(basename "$FILE")
+  NORMALIZED="./tmp/source/templates/${NAME}"
+  sed 's/\r$//' "$FILE" > "$NORMALIZED"
+  "${HB_EXEC}" "$NORMALIZED" -f "./tmp/tpl/${NAME}.js"
+done < <(find ./templates -maxdepth 1 -type f -print0 | sort -z)
 
 # Compile partials
-for FILE in ./partials/*;
-do
-  NAME=$(basename $FILE)
-  ${HB_EXEC} --partial $FILE -f ./tmp/tpl/${NAME}.js
-done
+while IFS= read -r -d '' FILE; do
+  NAME=$(basename "$FILE")
+  NORMALIZED="./tmp/source/partials/${NAME}"
+  sed 's/\r$//' "$FILE" > "$NORMALIZED"
+  "${HB_EXEC}" --partial "$NORMALIZED" -f "./tmp/tpl/${NAME}.js"
+done < <(find ./partials -maxdepth 1 -type f -print0 | sort -z)
 
 echo "Building ..."
 
 JS_FILES=(node_modules/jquery/dist/jquery.js \
   vendor/jquery.scrollintoview.js \
-  node_modules/bootstrap/dist/js/bootstrap.js \
   vendor/async.js \
   vendor/json2.js \
   vendor/polyfill.js \
@@ -48,28 +62,50 @@ JS_FILES=(node_modules/jquery/dist/jquery.js \
   src/URLParse.js \
   src/Cookie.js \
   node_modules/handlebars/dist/handlebars.runtime.js \
-  src/template.js \
-  tmp/tpl/** \
+  src/i18n.js \
+  src/template.js)
+while IFS= read -r -d '' FILE; do
+  JS_FILES+=("$FILE")
+done < <(find ./tmp/tpl -maxdepth 1 -type f -name '*.js' -print0 | sort -z)
+JS_FILES+=(\
+  src/ui-compat.js \
   src/HTMLApi.js \
   src/Explorer.js \
   src/init.js)
 
 # Combine all javascript files together
 # Need to add a semicolon between each file
-for str in ${JS_FILES[@]}; do
-  cat $str >> ${DIST}/ui.js
-  echo ";" >> ${DIST}/ui.js
+for str in "${JS_FILES[@]}"; do
+  cat "$str" >> "${DIST}/ui.js"
+  echo ";" >> "${DIST}/ui.js"
 done
 
-# Copy bootstrap files
-cp -R node_modules/bootstrap/dist/** ${DIST}
-
-# Patch bootstrap.css to remove source mapping URL comment
-sed -i.bak -e "s@/\*# sourceMappingURL=bootstrap\.css\.map.*@@g" ${DIST}/css/bootstrap.css
-rm -f ${DIST}/css/bootstrap.css.bak
+# Preserve the reviewed static layout assets without shipping Bootstrap's
+# executable plug-ins.  The CSS font path is made relative to the emitted
+# stylesheet so the local fixture and the Server's versioned route agree.
+mkdir -p \
+  "${DIST}/fonts" \
+  "${DIST}/licenses/bootstrap-3.4.1" \
+  "${DIST}/licenses/jquery-3.7.1" \
+  "${DIST}/licenses/handlebars-4.7.9" \
+  "${DIST}/licenses/inherited-vendor"
+cp vendor/bootstrap-3.4.1/fonts/* "${DIST}/fonts/"
+cp LICENSE.txt ORIGIN.md THIRD-PARTY-NOTICES.md "${DIST}/licenses/"
+cp vendor/bootstrap-3.4.1/LICENSE \
+  vendor/bootstrap-3.4.1/NORMALIZE-LICENSE \
+  vendor/bootstrap-3.4.1/NOTICE.md \
+  vendor/bootstrap-3.4.1/SHA256SUMS \
+  "${DIST}/licenses/bootstrap-3.4.1/"
+cp node_modules/jquery/LICENSE.txt "${DIST}/licenses/jquery-3.7.1/LICENSE.txt"
+cp node_modules/handlebars/LICENSE "${DIST}/licenses/handlebars-4.7.9/LICENSE"
+cp vendor/licenses/LICENSE-* vendor/licenses/NOTICE-* \
+  "${DIST}/licenses/inherited-vendor/"
+find "${DIST}/licenses" -type f -exec sed -i 's/\r$//' {} +
 
 # Generate css
-cat ./node_modules/bootstrap/dist/css/bootstrap.css \
+sed 's@url("../fonts/@url("./fonts/@g' \
+  vendor/bootstrap-3.4.1/css/bootstrap.css > ./tmp/layout.css
+cat ./tmp/layout.css \
   styles/main.scss \
   styles/explorer.scss \
   > ./tmp/ui.scss
@@ -78,26 +114,44 @@ cat ./node_modules/bootstrap/dist/css/bootstrap.css \
 ./node_modules/.bin/sass ./tmp/ui.scss ${DIST}/ui.css
 
 # Minimise javascript
-./node_modules/.bin/uglifyjs -c --source-map -o ${DIST}/ui.min.js ${DIST}/ui.js 
+./node_modules/.bin/uglifyjs -c -o "${DIST}/ui.min.js" "${DIST}/ui.js"
 
 # Minimise css
-./node_modules/.bin/cleancss ${DIST}/ui.css -o ${DIST}/ui.min.css
+node - "${DIST}/ui.css" "${DIST}/ui.min.css" <<'NODE'
+const fs = require('fs');
+const CleanCSS = require('clean-css');
+const input = fs.readFileSync(process.argv[2], 'utf8');
+const output = new CleanCSS({level: 2}).minify(input);
+if (output.errors.length) {
+  throw new Error(output.errors.join('\n'));
+}
+fs.writeFileSync(process.argv[3], output.styles);
+NODE
 
-# tar
-echo "Creating tar file ..."
-tar -cvzf ./dist/${VERSION}.tar.gz -C ${DIST} .
-
-# Copy index.html for testing
-sed -e "s/VERSION/"${VERSION}"/g" ./index.html.tmpl > ./dist/index.html
+# Do not ship source maps or dangling source-map references.
+find "${DIST}" -type f -name '*.map' -delete
+find "${DIST}" -type f \( -name '*.css' -o -name '*.js' \) -exec \
+  sed -i -E 's@/\*[#@][[:space:]]*sourceMappingURL=[^*]+\*/@@g; s@//# sourceMappingURL=.*$@@g' {} +
 
 # Generate versions file
-COMMIT=$(git rev-parse --short HEAD)
-sed -e "s/VERSION/"${VERSION}"/g" ./version.json.tmpl > ${DIST}/version.json
-sed -i.bak -e "s/COMMIT/"${COMMIT}"/g" ${DIST}/version.json
-rm -f ${DIST}/version.json.bak
+COMMIT=$(git -c safe.directory="$PWD" rev-parse --short HEAD)
+sed -e "s/VERSION/${VERSION}/g" -e "s/COMMIT/${COMMIT}/g" ./version.json.tmpl > "${DIST}/version.json"
 
-ENV_OUTPUT="${GITHUB_OUTPUT:-"temp-env"}"
-echo "VERSION=${VERSION}" >> "$ENV_OUTPUT"
+# Canonical release archive
+echo "Creating deterministic tar file ..."
+find "${DIST}" -type d -exec chmod 0755 {} +
+find "${DIST}" -type f -exec chmod 0644 {} +
+find "${DIST}" -exec touch -d "@${SOURCE_DATE_EPOCH}" {} +
+archive_tmp=$(mktemp "./dist/.${VERSION}.tar.gz.XXXXXX")
+trap 'rm -f "$archive_tmp"' EXIT
+tar --sort=name --format=gnu --mtime="@${SOURCE_DATE_EPOCH}" \
+  --owner=0 --group=0 --numeric-owner -cf - -C "${DIST}" . | gzip -n > "$archive_tmp"
+mv "$archive_tmp" "./dist/${VERSION}.tar.gz"
+chmod 0644 "./dist/${VERSION}.tar.gz"
+trap - EXIT
+
+# Copy index.html for testing
+sed -e "s/VERSION/${VERSION}/g" ./index.html.tmpl > ./dist/index.html
 
 echo ""
 echo "All done"

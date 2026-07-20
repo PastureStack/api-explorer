@@ -18,6 +18,7 @@ Explorer.prototype.show = function(cb)
   };
 
   document.body.innerHTML = Handlebars.templates['explorer.hbs'](tpl);
+  window.PastureStackI18n.syncSelectors();
   $('#explorer').css('top', $('#header')[0].offsetHeight + 'px');
 
   this.rootColumn();
@@ -338,12 +339,12 @@ Explorer.prototype.clickRow = function(event)
   var $sel = $('LI.row.selected', $col);
   if ( $sel.length == 0 )
   {
-    alert('Nothing is selected');
+    alert(window.PastureStackI18n.text('nothingSelected'));
     return;
   }
   else if ( $sel.length > 1 )
   {
-    alert($sel.length + ' things are selected');
+    alert($sel.length + ' ' + window.PastureStackI18n.text('selectedCount'));
     return;
   }
   else

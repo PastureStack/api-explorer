@@ -4,7 +4,10 @@ function URLParse()
 
 URLParse.updateQuery = function(url,assoc)
 {
-  var parts = url.split('?',2);
+  var hashPos = url.indexOf('#');
+  var hash = hashPos >= 0 ? url.substr(hashPos) : '';
+  var urlWithoutHash = hashPos >= 0 ? url.substr(0, hashPos) : url;
+  var parts = urlWithoutHash.split('?',2);
   var base = parts[0];
   var query = URLParse.queryStringToAssoc(parts[1]||'');
 
@@ -17,17 +20,10 @@ URLParse.updateQuery = function(url,assoc)
     }
 
     v = assoc[k];
-    if ( v === null )
-    {
-      delete query[k];
-    }
-    else
-    {
-      query[k] = v;
-    }
+    URLParse.setQueryEntry(query, k, v);
   }
 
-  var out = base + URLParse.assocToQueryString(query);
+  var out = base + URLParse.assocToQueryString(query) + hash;
   return out;
 }
 
@@ -82,27 +78,48 @@ URLParse.queryStringToAssoc = function(qs)
   var qs_assoc = [];
   for (var i=0 ; i < args.length ; i++ )
   {
-    pair = args[i].split('=');
-    name = unescape(pair[0]);
-
-    if (pair.length == 2)
-      value = unescape(pair[1]);
-    else
-      value = '';
-
-    if ( name.match(/\[\]$/) )
+    var separator = args[i].indexOf('=');
+    pair = separator < 0 ? [args[i]] : [args[i].substr(0, separator), args[i].substr(separator + 1)];
+    try
     {
-      name = name.replace(/\[\]$/, '');
-      if ( !qs_assoc[name] )
-      {
-        qs_assoc[name] = [];
-      }
+      name = decodeURIComponent(pair[0]);
+      value = pair.length == 2 ? decodeURIComponent(pair[1]) : '';
+    }
+    catch (e)
+    {
+      // Ignore malformed percent-encoding instead of interpreting a partial key.
+      continue;
+    }
 
-      qs_assoc[name][qs_assoc[name].length] = value;
+    var isArray = /\[\]$/.test(name);
+    if ( isArray )
+      name = name.replace(/\[\]$/, '');
+
+    if ( URLParse.isUnsafeQueryKey(name) )
+      continue;
+
+    var existingIndex = URLParse.queryEntryIndex(qs_assoc, name);
+    if ( isArray )
+    {
+      if ( existingIndex < 0 )
+      {
+        qs_assoc.push({name: name, value: [value]});
+      }
+      else if ( Array.isArray(qs_assoc[existingIndex].value) )
+      {
+        qs_assoc[existingIndex].value.push(value);
+      }
+      else
+      {
+        qs_assoc[existingIndex].value = [qs_assoc[existingIndex].value, value];
+      }
     }
     else
     {
-      qs_assoc[name] = value;
+      if ( existingIndex < 0 )
+        qs_assoc.push({name: name, value: value});
+      else
+        qs_assoc[existingIndex].value = value;
     }
   }
 
@@ -113,19 +130,58 @@ URLParse.assocToQueryString = function(assoc)
 {
   var ret = '';
 
-  var v;
-  for ( var k in assoc )
+  for ( var i = 0 ; i < assoc.length ; i++ )
   {
-    if ( !assoc.hasOwnProperty(k) )
-    {
+    var entry = assoc[i];
+    if ( !entry || URLParse.isUnsafeQueryKey(entry.name) )
       continue;
-    }
 
-    v = assoc[k];
-    ret += (ret ? '&' : '?') + escape(k) + '=' + escape(v);
+    var values = Array.isArray(entry.value) ? entry.value : [entry.value];
+    for ( var valueIndex = 0 ; valueIndex < values.length ; valueIndex++ )
+    {
+      var suffix = Array.isArray(entry.value) ? '[]' : '';
+      ret += (ret ? '&' : '?') + encodeURIComponent(entry.name + suffix) + '=' + encodeURIComponent(values[valueIndex]);
+    }
   }
 
   return ret;
+}
+
+URLParse.isUnsafeQueryKey = function(name)
+{
+  return name === '__proto__' || name === 'prototype' || name === 'constructor';
+}
+
+URLParse.queryEntryIndex = function(assoc,name)
+{
+  for ( var i = 0 ; i < assoc.length ; i++ )
+  {
+    if ( assoc[i].name === name )
+      return i;
+  }
+
+  return -1;
+}
+
+URLParse.setQueryEntry = function(assoc,name,value)
+{
+  if ( URLParse.isUnsafeQueryKey(name) )
+    return;
+
+  var index = URLParse.queryEntryIndex(assoc, name);
+  if ( value === null )
+  {
+    if ( index >= 0 )
+      assoc.splice(index, 1);
+  }
+  else if ( index >= 0 )
+  {
+    assoc[index].value = value;
+  }
+  else
+  {
+    assoc.push({name: name, value: value});
+  }
 }
 
 URLParse.generateHash = function(length,which)
@@ -145,3 +201,6 @@ URLParse.generateHash = function(length,which)
 
   return str;
 }
+
+if ( typeof module === 'object' && module.exports )
+  module.exports = URLParse;

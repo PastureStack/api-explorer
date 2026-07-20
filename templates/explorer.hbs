@@ -9,11 +9,16 @@
     </td>
   -->
     <td style="vertical-align: top; text-align: right">
-      <a href="#" onclick="htmlapi.logout(); return false">Log Out</a><br/>
+      <label for="pasturestack-locale">{{t "language"}}</label>
+      <select id="pasturestack-locale" class="pasturestack-locale" onchange="PastureStackI18n.setLocale(this.value)">
+        <option value="en-US">English</option>
+        <option value="zh-TW">繁體中文</option>
+      </select><br/>
+      <a href="#" onclick="htmlapi.logout(); return false">{{t "logOut"}}</a><br/>
 
-      <a href="#" onclick="Cookie.set('apiview','browse'); htmlapi.show(); return false">JSON View</a><br/>
+      <a href="#" onclick="Cookie.set('apiview','browse'); htmlapi.show(); return false">{{t "jsonView"}}</a><br/>
       {{#if docs}}
-        <a href="{{docs}}" target="cloudapidocs">Documentation</a>
+        <a href="{{docs}}" target="pasturestack-api-docs">{{t "documentation"}}</a>
       {{/if}}
     </td>
   </tr>

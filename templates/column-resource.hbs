@@ -1,16 +1,16 @@
 <div class="column-header">
-  Resource
+  {{t "resource"}}
   {{#if data.type}}: {{data.type}}{{/if}}
   {{#if data.id}} {{data.id}}{{/if}}
 </div>
 <ul class="column-body">
   <li>
-    <div class="section-header">&#9660;Links</div>
+    <div class="section-header">&#9660;{{t "links"}}</div>
     {{>column-links}}
   </li>
 
   <li>
-    <div class="section-header">&#9660;Fields</div>
+    <div class="section-header">&#9660;{{t "fields"}}</div>
     <table class="resource-fields">
     {{#eachProperty data}}
     <tr>

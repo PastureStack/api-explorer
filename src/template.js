@@ -1,5 +1,9 @@
 Handlebars.templates = Handlebars.templates || {};
 
+Handlebars.registerHelper('t', function(key) {
+  return window.PastureStackI18n.text(key);
+});
+
 Handlebars.registerHelper('ifEqual', function(a, b, options) {
   if ( a == b )
   {
@@ -77,11 +81,11 @@ Handlebars.registerHelper('displayModifier', function(context, options) {
   {
     case ""       : str = '='; break;
     case "eq"     : str = '='; break;
-    case "ne"     : str = '&ne;'; break;
-    case "lt"     : str = '&lt;'; break;
-    case "lte"    : str = '&le;'; break;
-    case "gt"     : str = '&gt;'; break;
-    case "gte"    : str = '&ge;'; break;
+    case "ne"     : str = '≠'; break;
+    case "lt"     : str = '<'; break;
+    case "lte"    : str = '≤'; break;
+    case "gt"     : str = '>'; break;
+    case "gte"    : str = '≥'; break;
     case "null"   : str = 'NULL'; break;
     case "notnull": str = 'Not NULL'; break;
     case "like"   : str = 'Like'; break;
@@ -90,5 +94,5 @@ Handlebars.registerHelper('displayModifier', function(context, options) {
     case "suffix" : str = 'Ends with'; break;
   }
 
-  return new Handlebars.SafeString(str);
+  return str;
 });

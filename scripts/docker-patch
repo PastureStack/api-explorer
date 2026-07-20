@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Use this script to patch the api-ui in a running container
+# Use this script to patch API Explorer in an explicitly selected test container.
 
-CONTAINER=$1
+CONTAINER=${1:-}
+TARGET_PATH=${PASTURESTACK_API_EXPLORER_PATH:-/usr/share/pasturestack/ui/api-explorer}
 
 if [ -z "$1" ]; then
   echo "Need container ID"
@@ -14,15 +15,12 @@ if [ ! -d ./dist ]; then
   exit 1
 fi
 
-echo "Patching running container with latest api-ui"
+echo "Patching test container with the local PastureStack API Explorer build"
 
-docker exec -it ${CONTAINER} bash -c "rm -rf /usr/share/rancher/ui/api-ui/*"
+docker exec -it "${CONTAINER}" sh -c "test -d '${TARGET_PATH}' && rm -rf '${TARGET_PATH:?}'/*"
 
 # Copy in the built code
 
 VERSION=$(node -e "(function () { console.log(require('./package.json').version) })()")
 
-docker cp ./dist/${VERSION}/ ${CONTAINER}:/usr/share/rancher
-
-docker exec -it ${CONTAINER} bash -c "cp -R /usr/share/rancher/${VERSION}/* /usr/share/rancher/ui/api-ui/"
-docker exec -it ${CONTAINER} bash -c "rm -rf /usr/share/rancher/${VERSION}"
+docker cp "./dist/${VERSION}/." "${CONTAINER}:${TARGET_PATH}/"
