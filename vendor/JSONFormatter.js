@@ -1,5 +1,9 @@
 /*
-https://github.com/bhollis/jsonview/blob/master/src/components/jsonview.js
+https://github.com/bhollis/jsonview/blob/984de2b8cf2c5ab02846ea09f09208259ac033e0/src/components/jsonview.js
+
+Compatibility component Version 1.0.0.
+Derived from upstream revision 984de2b8cf2c5ab02846ea09f09208259ac033e0;
+subsequent adaptations remain visible in this repository's Git history.
 
 MIT License
 

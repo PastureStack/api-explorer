@@ -11,8 +11,9 @@
     "type": "git",
     "url": "https://github.com/PastureStack/api-explorer.git"
   },
+  "packageManager": "npm@11.17.0",
   "engines": {
-    "node": ">= 24"
+    "node": "24.19.0"
   },
   "scripts": {
     "clean": "bash ./scripts/clean",

@@ -1,9 +1,12 @@
 name: CodeQL verification
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
-      - 'verification/api-explorer-*'
+      - main
   workflow_dispatch:
 
 permissions:
@@ -19,7 +22,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out candidate
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # releases/v6 commit
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -29,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain)"
-          test "$(git rev-list --count 80270e0af984025b14afc61c0d0b0a4f08d968bf..HEAD)" -eq 1
+          git merge-base --is-ancestor 80270e0af984025b14afc61c0d0b0a4f08d968bf HEAD
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
@@ -99,5 +102,5 @@ jobs:
           name: api-explorer-codeql-${{ github.sha }}
           path: codeql-results/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 30
           compression-level: 9

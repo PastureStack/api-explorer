@@ -30,8 +30,18 @@ and other subsequent modifications.
   [`vendor/licenses/LICENSE-async-0.9.0`](vendor/licenses/LICENSE-async-0.9.0).
 - jquery-scrollintoview 1.8, copyright Robert Koritnik, MIT. The retained text
   is [`vendor/licenses/LICENSE-jquery-scrollintoview-1.8`](vendor/licenses/LICENSE-jquery-scrollintoview-1.8).
-- JSONFormatter derives from Benjamin Hollis's jsonview code, MIT. The retained
-  text is [`vendor/licenses/LICENSE-jsonformatter-2009`](vendor/licenses/LICENSE-jsonformatter-2009).
+- JSONFormatter compatibility component 1.0.0 derives from Benjamin Hollis's
+  jsonview revision `984de2b8cf2c5ab02846ea09f09208259ac033e0`, MIT. The retained text is
+  [`vendor/licenses/LICENSE-jsonformatter-2009`](vendor/licenses/LICENSE-jsonformatter-2009),
+  and subsequent adaptations remain attributable through this repository's Git
+  history.
+- `polyfill.js` compatibility component 1.0.0 is locally tracked source retained
+  from its first repository revision
+  `bce1a44ccdf5c7747d6397e86faef038d2c12701`. The inherited project recorded
+  MIT terms in revision `d79425362a5338797c5f5c546c0108ff19f62d56`;
+  the retained text is
+  [`vendor/licenses/LICENSE-polyfill-compat`](vendor/licenses/LICENSE-polyfill-compat),
+  and subsequent changes remain attributable through Git history.
 - `json2.js` dated 2011-10-19 is marked Public Domain by its upstream author;
   the retained notice is [`vendor/licenses/NOTICE-json2`](vendor/licenses/NOTICE-json2).
 

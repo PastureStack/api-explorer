@@ -1,3 +1,11 @@
+/*
+ * Compatibility component Version 1.0.0.
+ * This compatibility source first appears at repository revision
+ * bce1a44ccdf5c7747d6397e86faef038d2c12701. Its inherited MIT terms are
+ * retained in vendor/licenses/LICENSE-polyfill-compat, and subsequent changes
+ * remain visible in Git history.
+ */
+
 if ( !Object.keys )
 {
   Object.keys = function (o) 

@@ -34,8 +34,11 @@ for (const section of ['dependencies', 'devDependencies', 'optionalDependencies'
 if (pkg.version !== '1.1.16') {
   fail('PACKAGE_RELEASE_VERSION_UNEXPECTED', `actual=${pkg.version}`);
 }
-if (!pkg.engines || pkg.engines.node !== '>= 24') {
+if (!pkg.engines || pkg.engines.node !== '24.19.0') {
   fail('NODE_ENGINE_UNEXPECTED', `actual=${pkg.engines && pkg.engines.node}`);
+}
+if (pkg.packageManager !== 'npm@11.17.0') {
+  fail('PACKAGE_MANAGER_UNEXPECTED', `actual=${pkg.packageManager}`);
 }
 if (!pkg.repository || pkg.repository.url !== 'https://github.com/PastureStack/api-explorer.git') {
   fail('REPOSITORY_METADATA_UNEXPECTED');
@@ -47,7 +50,7 @@ if (failures) {
   console.log(`failure_count=${failures}`);
   process.exit(1);
 }
-console.log('API_EXPLORER_PACKAGE_METADATA_OK jquery=3.7.1 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
+console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=11.17.0 jquery=3.7.1 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
 NODE
 
 (

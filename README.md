@@ -4,7 +4,7 @@ API Explorer is an embeddable browser interface for services that implement the 
 
 PastureStack is an independent community effort to preserve, audit, and modernize the Rancher 1.6 ecosystem. It is not affiliated with or endorsed by Rancher Labs or SUSE.
 
-**Upstream:** [`rancher/api-ui`](https://github.com/rancher/api-ui). This GitHub fork preserves upstream history, authorship, dates, tags, licenses, and dependency notices. PastureStack maintenance is consolidated into one commit after the preserved upstream boundary.
+**Upstream:** [`rancher/api-ui`](https://github.com/rancher/api-ui). This GitHub fork preserves upstream history, authorship, dates, tags, licenses, and dependency notices. The migration baseline is consolidated immediately after the preserved upstream boundary; later maintenance remains visible as ordinary reviewable commits.
 
 ## Project status
 
@@ -13,6 +13,8 @@ This maintained compatibility release is based on the latest reviewed upstream `
 The Server currently consumes the immutable `v1.1.15` release artifact. Version `1.1.16` is the reviewed security candidate and does not become the Server default until the coordinated embedded-server test passes. This repository does not publish a standalone CDN or npm package, and the explorer is supported only as a Server-embedded compatibility interface.
 
 ## Build locally
+
+Requires Node.js 24.19.0 and npm 11.17.0.
 
 ```sh
 npm ci --no-audit --no-fund
