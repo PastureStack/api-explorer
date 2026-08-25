@@ -14,7 +14,7 @@ The Server currently consumes the immutable `v1.1.15` release artifact. Version 
 
 ## Build locally
 
-Requires Node.js 24.19.0 and npm 11.17.0.
+Requires Node.js 24.19.0 and npm 12.0.2.
 
 ```sh
 npm ci --no-audit --no-fund

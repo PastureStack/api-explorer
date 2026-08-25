@@ -86,7 +86,7 @@ done
 mkdir -p \
   "${DIST}/fonts" \
   "${DIST}/licenses/bootstrap-3.4.1" \
-  "${DIST}/licenses/jquery-3.7.1" \
+  "${DIST}/licenses/jquery-4.0.0" \
   "${DIST}/licenses/handlebars-4.7.9" \
   "${DIST}/licenses/inherited-vendor"
 cp vendor/bootstrap-3.4.1/fonts/* "${DIST}/fonts/"
@@ -96,7 +96,7 @@ cp vendor/bootstrap-3.4.1/LICENSE \
   vendor/bootstrap-3.4.1/NOTICE.md \
   vendor/bootstrap-3.4.1/SHA256SUMS \
   "${DIST}/licenses/bootstrap-3.4.1/"
-cp node_modules/jquery/LICENSE.txt "${DIST}/licenses/jquery-3.7.1/LICENSE.txt"
+cp node_modules/jquery/LICENSE.txt "${DIST}/licenses/jquery-4.0.0/LICENSE.txt"
 cp node_modules/handlebars/LICENSE "${DIST}/licenses/handlebars-4.7.9/LICENSE"
 cp vendor/licenses/LICENSE-* vendor/licenses/NOTICE-* \
   "${DIST}/licenses/inherited-vendor/"

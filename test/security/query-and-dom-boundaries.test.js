@@ -12,12 +12,15 @@ function createDom(body, url) {
     url: url || 'https://console.example.test/v1/resources?limit=10#details'
   });
   const window = dom.window;
-  const jqueryFactory = require('jquery');
-  const $ = jqueryFactory(window);
-  window.$ = $;
-  window.jQuery = $;
   global.window = window;
   global.document = window.document;
+  // jQuery 4 resolves its browser globals when the CommonJS module is loaded.
+  // Reload it for each isolated JSDOM window instead of calling the former
+  // jQuery 3 factory export.
+  delete require.cache[require.resolve('jquery')];
+  const $ = require('jquery');
+  window.$ = $;
+  window.jQuery = $;
   global.$ = $;
   global.jQuery = $;
   window.console = console;

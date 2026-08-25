@@ -23,7 +23,7 @@ and other subsequent modifications.
 ## Executable browser libraries
 
 - jQuery 3.7.1, copyright OpenJS Foundation and other contributors, MIT.
-  The complete text is emitted as `licenses/jquery-3.7.1/LICENSE.txt`.
+  The complete text is emitted as `licenses/jquery-4.0.0/LICENSE.txt`.
 - Handlebars Runtime 4.7.9, copyright Yehuda Katz and contributors, MIT.
   The complete text is emitted as `licenses/handlebars-4.7.9/LICENSE`.
 - async 0.9.0, copyright Caolan McMahon, MIT. The retained text is

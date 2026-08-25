@@ -20,7 +20,7 @@ function expect(section, name, expected) {
     fail('PACKAGE_VERSION_UNEXPECTED', `section=${section} package=${name} actual=${actual} expected=${expected}`);
   }
 }
-expect('dependencies', 'jquery', '3.7.1');
+expect('dependencies', 'jquery', '4.0.0');
 expect('dependencies', 'handlebars', '4.7.9');
 expect('devDependencies', 'sass', '1.102.0');
 expect('devDependencies', 'uglify-js', '3.19.3');
@@ -37,7 +37,7 @@ if (pkg.version !== '1.1.16') {
 if (!pkg.engines || pkg.engines.node !== '24.19.0') {
   fail('NODE_ENGINE_UNEXPECTED', `actual=${pkg.engines && pkg.engines.node}`);
 }
-if (pkg.packageManager !== 'npm@11.17.0') {
+if (pkg.packageManager !== 'npm@12.0.2') {
   fail('PACKAGE_MANAGER_UNEXPECTED', `actual=${pkg.packageManager}`);
 }
 if (!pkg.repository || pkg.repository.url !== 'https://github.com/PastureStack/api-explorer.git') {
@@ -50,7 +50,7 @@ if (failures) {
   console.log(`failure_count=${failures}`);
   process.exit(1);
 }
-console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=11.17.0 jquery=3.7.1 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
+console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=12.0.2 jquery=4.0.0 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
 NODE
 
 (
@@ -120,7 +120,7 @@ test -s "$release_dir/licenses/THIRD-PARTY-NOTICES.md"
 test -s "$release_dir/licenses/bootstrap-3.4.1/LICENSE"
 test -s "$release_dir/licenses/bootstrap-3.4.1/NORMALIZE-LICENSE"
 test -s "$release_dir/licenses/bootstrap-3.4.1/NOTICE.md"
-test -s "$release_dir/licenses/jquery-3.7.1/LICENSE.txt"
+test -s "$release_dir/licenses/jquery-4.0.0/LICENSE.txt"
 test -s "$release_dir/licenses/handlebars-4.7.9/LICENSE"
 test -s "$release_dir/licenses/inherited-vendor/LICENSE-async-0.9.0"
 test -s "$release_dir/licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8"
@@ -155,7 +155,7 @@ for member in \
   './licenses/bootstrap-3.4.1/LICENSE' \
   './licenses/bootstrap-3.4.1/NORMALIZE-LICENSE' \
   './licenses/bootstrap-3.4.1/NOTICE.md' \
-  './licenses/jquery-3.7.1/LICENSE.txt' \
+  './licenses/jquery-4.0.0/LICENSE.txt' \
   './licenses/handlebars-4.7.9/LICENSE' \
   './licenses/inherited-vendor/LICENSE-async-0.9.0' \
   './licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8' \
