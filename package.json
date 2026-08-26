@@ -1,6 +1,6 @@
 {
   "name": "@pasturestack/api-explorer",
-  "version": "1.1.17",
+  "version": "1.1.18",
   "private": true,
   "description": "Embedded PastureStack explorer for compatible API services",
   "author": "Original contributors and PastureStack maintainers",
@@ -25,8 +25,8 @@
     "bootstrap": "5.3.8",
     "bootstrap-icons": "1.13.1",
     "clean-css": "5.3.3",
-    "jsdom": "29.1.1",
-    "sass": "1.102.0",
+    "jsdom": "30.0.1",
+    "sass": "1.103.1",
     "uglify-js": "3.19.3"
   },
   "dependencies": {

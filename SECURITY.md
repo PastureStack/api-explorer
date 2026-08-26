@@ -2,7 +2,7 @@
 
 ## Supported state
 
-Version `1.1.15` remains the supported Server-embedded compatibility release. Version `1.1.16` is the reviewed security candidate until the coordinated Server integration gate passes.
+Version `1.1.17` remains the supported Server-embedded compatibility release. Version `1.1.18` is the reviewed dependency-refresh candidate until the coordinated Server integration gate passes.
 
 ## Security boundaries
 

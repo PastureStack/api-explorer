@@ -10,7 +10,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The Server currently consumes the immutable `v1.1.15` release artifact. Version `1.1.16` is the reviewed security candidate and does not become the Server default until the coordinated embedded-server test passes. This repository does not publish a standalone CDN or npm package, and the explorer is supported only as a Server-embedded compatibility interface.
+The Server currently consumes the immutable `v1.1.17` release artifact. Version `1.1.18` is the reviewed dependency-refresh candidate and does not become the Server default until the coordinated embedded-server test passes. This repository does not publish a standalone CDN or npm package, and the explorer is supported only as a Server-embedded compatibility interface.
 
 ## Build locally
 
@@ -23,11 +23,11 @@ npm run ci
 npm run build
 ```
 
-The tracked npm lockfile is the executable dependency contract. The build emits a deterministic `dist/1.1.16.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact.
+The tracked npm lockfile is the executable dependency contract. The build emits a deterministic `dist/1.1.18.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact.
 
-Bootstrap JavaScript is not shipped. The artifact retains only reviewed,
-attributed Bootstrap 3.4.1 CSS and font files for the inherited layout, plus a
-small first-party modal and dropdown compatibility layer. See
+Bootstrap JavaScript is not shipped. The artifact uses reviewed, attributed
+Bootstrap 5.3.8 CSS and Bootstrap Icons 1.13.1, plus a small first-party modal
+and dropdown compatibility layer. See
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for provenance and terms.
 
 Set `window.pasturestackLocale` to `en-US` or `zh-TW` before loading the bundle, or use the built-in language selector. API resources, field names, enum values, identifiers, and remote errors are not translated. See [COMPATIBILITY.md](COMPATIBILITY.md), [SECURITY.md](SECURITY.md), and [ORIGIN.md](ORIGIN.md).
