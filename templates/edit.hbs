@@ -1,7 +1,7 @@
 <form id="edit-form">
 <div id="request-input">
   {{#if description}}
-    <div class="well" style="padding: 10px; margin-bottom: 10px;">{{description}}</div>
+    <div class="alert alert-secondary" style="padding: 10px; margin-bottom: 10px;">{{description}}</div>
   {{/if}}
   <table class="fixed" width="100%">
   <tr>
@@ -32,7 +32,7 @@
           {{#if required}}<span class="required">*</span>{{/if}}
           {{name}}
           {{#if description}}
-            <span class="tip" title="{{description}}"><i class="glyphicon glyphicon-info-sign"></i></span>
+            <span class="tip" title="{{description}}"><i class="bi bi-info-circle"></i></span>
           {{/if}}
         </td>
         <td>

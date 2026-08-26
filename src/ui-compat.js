@@ -11,7 +11,7 @@
   }
 
   function releaseModalBodyLock() {
-    if ( $('.modal.in').length === 0 ) {
+    if ( $('.modal.show').length === 0 ) {
       $('body').removeClass('modal-open');
     }
   }
@@ -57,8 +57,8 @@
       // Force layout before enabling the CSS transition.
       state.backdrop[0].offsetWidth;
       modal[0].offsetWidth;
-      state.backdrop.addClass('in');
-      modal.addClass('in');
+      state.backdrop.addClass('show');
+      modal.addClass('show');
 
       afterTransition(function() {
         var current = modal.data(modalDataKey);
@@ -80,11 +80,11 @@
 
       state.visible = false;
       modal
-        .removeClass('in')
+        .removeClass('show')
         .attr('aria-hidden', 'true')
         .removeAttr('aria-modal')
         .off('mousedown.pasturestackModal');
-      state.backdrop.removeClass('in');
+      state.backdrop.removeClass('show');
 
       afterTransition(function() {
         modal.hide().removeData(modalDataKey);
@@ -99,7 +99,7 @@
     $(dropdownToggle).each(function() {
       var toggle = $(this);
       toggle.attr('aria-expanded', 'false');
-      toggle.parent().removeClass('open');
+      toggle.parent().removeClass('show').find('.dropdown-menu').removeClass('show');
     });
   }
 
@@ -110,27 +110,27 @@
     .on('click.pasturestackDropdown', dropdownToggle, function(event) {
       var toggle = $(this);
       var parent = toggle.parent();
-      var shouldOpen = !parent.hasClass('open');
+      var shouldOpen = !parent.hasClass('show');
 
       event.preventDefault();
       event.stopPropagation();
       closeDropdowns();
 
       if ( shouldOpen ) {
-        parent.addClass('open');
+        parent.addClass('show').find('.dropdown-menu').addClass('show');
         toggle.attr('aria-expanded', 'true');
       }
     })
     .on('keydown.pasturestackDropdown', dropdownToggle + ', .dropdown-menu a', function(event) {
       var key = event.which || event.keyCode;
-      var parent = $(this).closest('.input-group-btn');
+      var parent = $(this).closest('.dropdown');
       var toggle = parent.find(dropdownToggle).first();
       var items = parent.find('.dropdown-menu a:visible');
       var index = items.index(event.target);
 
       if ( key === 27 ) {
         event.preventDefault();
-        parent.removeClass('open');
+        parent.removeClass('show').find('.dropdown-menu').removeClass('show');
         toggle.attr('aria-expanded', 'false').trigger('focus');
         return;
       }
@@ -140,8 +140,8 @@
       }
 
       event.preventDefault();
-      if ( !parent.hasClass('open') ) {
-        parent.addClass('open');
+      if ( !parent.hasClass('show') ) {
+        parent.addClass('show').find('.dropdown-menu').addClass('show');
         toggle.attr('aria-expanded', 'true');
       }
 

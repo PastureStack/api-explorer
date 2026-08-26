@@ -22,16 +22,20 @@ function expect(section, name, expected) {
 }
 expect('dependencies', 'jquery', '4.0.0');
 expect('dependencies', 'handlebars', '4.7.9');
+expect('devDependencies', 'bootstrap', '5.3.8');
+expect('devDependencies', 'bootstrap-icons', '1.13.1');
 expect('devDependencies', 'sass', '1.102.0');
 expect('devDependencies', 'uglify-js', '3.19.3');
 expect('devDependencies', 'clean-css', '5.3.3');
 expect('devDependencies', 'jsdom', '29.1.1');
-for (const section of ['dependencies', 'devDependencies', 'optionalDependencies']) {
-  if (pkg[section] && Object.prototype.hasOwnProperty.call(pkg[section], 'bootstrap')) {
-    fail('BOOTSTRAP_EXECUTABLE_PACKAGE_PRESENT', `section=${section}`);
+for (const section of ['dependencies', 'optionalDependencies']) {
+  for (const name of ['bootstrap', 'bootstrap-icons']) {
+    if (pkg[section] && Object.prototype.hasOwnProperty.call(pkg[section], name)) {
+      fail('LAYOUT_PACKAGE_IN_RUNTIME_DEPENDENCIES', `section=${section} package=${name}`);
+    }
   }
 }
-if (pkg.version !== '1.1.16') {
+if (pkg.version !== '1.1.17') {
   fail('PACKAGE_RELEASE_VERSION_UNEXPECTED', `actual=${pkg.version}`);
 }
 if (!pkg.engines || pkg.engines.node !== '24.19.0') {
@@ -50,14 +54,19 @@ if (failures) {
   console.log(`failure_count=${failures}`);
   process.exit(1);
 }
-console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=12.0.2 jquery=4.0.0 handlebars=4.7.9 bootstrap_package=0 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
+console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=12.0.2 jquery=4.0.0 handlebars=4.7.9 bootstrap_css=5.3.8 bootstrap_icons=1.13.1 sass=1.102.0 uglify-js=3.19.3 clean-css=5.3.3');
 NODE
 
-(
-  cd vendor/bootstrap-3.4.1
-  sha256sum --check SHA256SUMS
-)
-echo 'API_EXPLORER_STATIC_LAYOUT_PROVENANCE_OK bootstrap_js=0 css_and_fonts=reviewed'
+test "$(node -p "require('bootstrap/package.json').version")" = 5.3.8
+test "$(node -p "require('bootstrap-icons/package.json').version")" = 1.13.1
+test ! -e vendor/bootstrap-3.4.1
+echo 'API_EXPLORER_STATIC_LAYOUT_PROVENANCE_OK bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_js=0'
+
+if grep -RInE 'glyphicon|btn-default|btn-xs|col-xs-|input-group-addon|input-group-btn|pull-right|text-right' \
+  src templates partials styles vendor/JSONFormatter.js; then
+  echo 'API_EXPLORER_BOOTSTRAP3_CLASS_PRESENT'
+  exit 1
+fi
 
 if grep -RInE "jQuery\.parseJSON|\.bind\(['\"]|\.unbind\(['\"]|\$\.isFunction" src vendor/*.js; then
   echo 'JQUERY_DEPRECATED_API_STILL_PRESENT'
@@ -65,7 +74,7 @@ if grep -RInE "jQuery\.parseJSON|\.bind\(['\"]|\.unbind\(['\"]|\$\.isFunction" s
 fi
 
 if grep -RInE \
-  "node_modules/bootstrap|bootstrap/dist/js|\.tooltip\(|\.popover\(|\.modal\(|shown\.bs\.modal|hidden\.bs\.modal|data-toggle=[\"']dropdown[\"']|data-loading-text|data-html=" \
+  "bootstrap/dist/js|\.tooltip\(|\.popover\(|\.modal\(|shown\.bs\.modal|hidden\.bs\.modal|data-toggle=[\"']dropdown[\"']|data-loading-text|data-html=" \
   scripts/build scripts/docker-patch src templates partials; then
   echo 'BOOTSTRAP_EXECUTABLE_OR_GENERIC_DATA_API_PRESENT'
   exit 1
@@ -73,8 +82,9 @@ fi
 
 for marker in \
   'src/ui-compat.js' \
-  'vendor/bootstrap-3.4.1/css/bootstrap.css' \
-  'vendor/bootstrap-3.4.1/fonts/*'; do
+  'node_modules/bootstrap/dist/css/bootstrap.css' \
+  'node_modules/bootstrap-icons/font/bootstrap-icons.css' \
+  'node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2'; do
   grep -Fq -- "$marker" scripts/build || {
     echo "API_EXPLORER_BUILD_MARKER_MISSING marker=$marker"
     exit 1
@@ -114,12 +124,12 @@ test -s "$release_dir/ui.min.js"
 test -s "$release_dir/ui.css"
 test -s "$release_dir/ui.min.css"
 test -s "$release_dir/version.json"
-test -s "$release_dir/fonts/glyphicons-halflings-regular.woff2"
+test -s "$release_dir/fonts/bootstrap-icons.woff"
+test -s "$release_dir/fonts/bootstrap-icons.woff2"
 test -s "$release_dir/licenses/LICENSE.txt"
 test -s "$release_dir/licenses/THIRD-PARTY-NOTICES.md"
-test -s "$release_dir/licenses/bootstrap-3.4.1/LICENSE"
-test -s "$release_dir/licenses/bootstrap-3.4.1/NORMALIZE-LICENSE"
-test -s "$release_dir/licenses/bootstrap-3.4.1/NOTICE.md"
+test -s "$release_dir/licenses/bootstrap-5.3.8/LICENSE"
+test -s "$release_dir/licenses/bootstrap-icons-1.13.1/LICENSE"
 test -s "$release_dir/licenses/jquery-4.0.0/LICENSE.txt"
 test -s "$release_dir/licenses/handlebars-4.7.9/LICENSE"
 test -s "$release_dir/licenses/inherited-vendor/LICENSE-async-0.9.0"
@@ -136,7 +146,12 @@ if grep -E \
 fi
 grep -Fq 'PastureStackUi' "$release_dir/ui.js"
 grep -Fq 'data-pasturestack-toggle' "$release_dir/ui.js"
-grep -Fq 'url("./fonts/glyphicons-halflings-regular.woff2")' "$release_dir/ui.css"
+grep -Eq 'Bootstrap +v5\.3\.8' "$release_dir/ui.css"
+grep -Fq 'url("./fonts/bootstrap-icons.woff2' "$release_dir/ui.css"
+if grep -Fq 'Bootstrap v3.' "$release_dir/ui.css"; then
+  echo 'API_EXPLORER_EOL_BOOTSTRAP_CSS_PRESENT'
+  exit 1
+fi
 
 member_list=$(mktemp)
 trap 'rm -f "$member_list"' EXIT
@@ -149,12 +164,12 @@ for member in \
   './ui.min.js' \
   './ui.min.css' \
   './version.json' \
-  './fonts/glyphicons-halflings-regular.woff2' \
+  './fonts/bootstrap-icons.woff' \
+  './fonts/bootstrap-icons.woff2' \
   './licenses/LICENSE.txt' \
   './licenses/THIRD-PARTY-NOTICES.md' \
-  './licenses/bootstrap-3.4.1/LICENSE' \
-  './licenses/bootstrap-3.4.1/NORMALIZE-LICENSE' \
-  './licenses/bootstrap-3.4.1/NOTICE.md' \
+  './licenses/bootstrap-5.3.8/LICENSE' \
+  './licenses/bootstrap-icons-1.13.1/LICENSE' \
   './licenses/jquery-4.0.0/LICENSE.txt' \
   './licenses/handlebars-4.7.9/LICENSE' \
   './licenses/inherited-vendor/LICENSE-async-0.9.0' \
@@ -173,5 +188,5 @@ second_sha256=$(sha256sum "$artifact" | awk '{print $1}')
 test "$first_sha256" = "$second_sha256"
 
 echo "API_EXPLORER_REPRODUCIBLE_ARCHIVE_GUARD_OK source_maps=0 canonical_tar=1 deterministic_gzip=1 canonical_text_order=1 artifact_mode=0644 sha256=${second_sha256}"
-echo "API_EXPLORER_RELEASE_GATES_OK version=${version} bootstrap_package=0 bootstrap_javascript=0 modal=first-party dropdown=first-party"
+echo "API_EXPLORER_RELEASE_GATES_OK version=${version} bootstrap_css=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 modal=first-party dropdown=first-party"
 echo 'failure_count=0'

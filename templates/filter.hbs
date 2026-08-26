@@ -1,23 +1,20 @@
 <div class="filter {{#ifInList cur.modifier "null,notnull"}}filter-novalue{{/ifInList}}" data-prefix="filter_{{cur.name}}">
   <div class="input-group filter-key">
-    <span class="input-group-btn">
-      <button type="button" class="btn btn-primary" onclick="htmlapi.filterRemove(this)"><i class="glyphicon glyphicon-minus-sign"></i></button>
-    </span>
-    <select class="form-control" id="filter_{{cur.name}}_name" onchange="htmlapi.filterChange(this)">
+    <button type="button" class="btn btn-primary" onclick="htmlapi.filterRemove(this)"><i class="bi bi-dash-circle"></i></button>
+    <select class="form-select" id="filter_{{cur.name}}_name" onchange="htmlapi.filterChange(this)">
     {{#eachProperty allFilterSchema}}
       <option value="{{key}}" {{#ifEqual key ../cur.name}} SELECTED{{/ifEqual}}>{{key}}</option>
     {{/eachProperty}}
     </select>
-    <span class="input-group-btn">
+    <span class="dropdown">
       {{#if thisFilterSchema.modifiers}}
-        <button type="button" class="btn btn-default dropdown-toggle" data-pasturestack-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-pasturestack-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="filter-modifier-label">{{displayModifier cur.modifier}}</span>
-          <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu text-right pull-right" style="min-width: 0">
+        <ul class="dropdown-menu text-end dropdown-menu-end" style="min-width: 0">
           {{#each thisFilterSchema.modifiers}}
             <li>
-              <a href="#" onclick="htmlapi.filterModifierChange(this); return false;" data-value="{{.}}" data-label="{{displayModifier .}}">
+              <a class="dropdown-item" href="#" onclick="htmlapi.filterModifierChange(this); return false;" data-value="{{.}}" data-label="{{displayModifier .}}">
                 {{displayModifier .}}
               </a>
             </li>
@@ -32,13 +29,13 @@
 
 
   {{#if options}}
-    <select class="form-control filter-value" id="filter_{{cur.name}}_value">
+    <select class="form-select filter-value" id="filter_{{cur.name}}_value">
       <option value=""></option>
       {{#eachProperty options}}
         <option value="{{value}}" {{#ifEqual ../cur.value value}} SELECTED{{/ifEqual}}>{{value}}</option>
       {{/eachProperty}}
     </select>
   {{else}}
-    <input type="text" class="form-control input-sm filter-value" id="filter_{{cur.name}}_value" value="{{cur.value}}" />
+    <input type="text" class="form-control form-control-sm filter-value" id="filter_{{cur.name}}_value" value="{{cur.value}}" />
   {{/if}}
 </div>

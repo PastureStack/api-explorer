@@ -3,18 +3,12 @@
 This file is a navigation aid and does not replace the applicable license
 texts, notices, or copyright statements.
 
-## Bootstrap static layout assets
+## Bootstrap layout assets
 
-The embedded release retains reviewed CSS and font files from Bootstrap 3.4.1
-to preserve the inherited layout contract. Copyright remains with Twitter,
-Inc. and the respective contributors. The files are licensed under the terms
-distributed with the upstream package; see
-[`vendor/bootstrap-3.4.1/LICENSE`](vendor/bootstrap-3.4.1/LICENSE) and
-[`vendor/bootstrap-3.4.1/NOTICE.md`](vendor/bootstrap-3.4.1/NOTICE.md).
-
-The CSS includes Normalize.css 3.0.3 by Nicolas Gallagher and Jonathan Neal;
-its MIT terms are retained in
-[`vendor/bootstrap-3.4.1/NORMALIZE-LICENSE`](vendor/bootstrap-3.4.1/NORMALIZE-LICENSE).
+The embedded release uses Bootstrap 5.3.8 CSS and Bootstrap Icons 1.13.1. The
+exact registry packages and integrity values are locked in `package-lock.json`;
+their MIT license texts are emitted as `licenses/bootstrap-5.3.8/LICENSE` and
+`licenses/bootstrap-icons-1.13.1/LICENSE` in every release archive.
 
 No Bootstrap JavaScript is included in the source dependency graph or release
 artifact. PastureStack claims authorship only for its own compatibility code
@@ -22,7 +16,7 @@ and other subsequent modifications.
 
 ## Executable browser libraries
 
-- jQuery 3.7.1, copyright OpenJS Foundation and other contributors, MIT.
+- jQuery 4.0.0, copyright OpenJS Foundation and other contributors, MIT.
   The complete text is emitted as `licenses/jquery-4.0.0/LICENSE.txt`.
 - Handlebars Runtime 4.7.9, copyright Yehuda Katz and contributors, MIT.
   The complete text is emitted as `licenses/handlebars-4.7.9/LICENSE`.

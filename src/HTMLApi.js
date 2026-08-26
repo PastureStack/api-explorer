@@ -184,7 +184,7 @@ HTMLApi.prototype.setModalActions = function(actions)
   var html = '';
 
   actions.forEach(function(action) {
-    var color = 'btn-default';
+    var color = 'btn-secondary';
     var btnType = 'button'
     if ( action.primary ) {
       color = 'btn-primary';
@@ -431,7 +431,7 @@ HTMLApi.prototype._addCollapser = function(item)
     return;
 
   var collapser = $('<i/>', {
-    "class": "glyphicon glyphicon-minus",
+    "class": "bi bi-dash",
     click: JSONFormatter.prototype.collapse
   });
 

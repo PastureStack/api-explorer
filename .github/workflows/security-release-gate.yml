@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      TRIVY_IMAGE: aquasec/trivy:0.73.0@sha256:7cced7cae583819fc7806d4cbc0dbbc7cad18b99f7d3e235192e6da8c091045c
+      TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
     steps:
       - name: Check out candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -35,6 +35,10 @@ jobs:
           node-version: '24.19.0'
           cache: npm
 
+      - name: Use the locked npm release
+        shell: bash
+        run: npm install --global npm@12.0.2 --ignore-scripts --no-audit --no-fund
+
       - name: Verify source identity and lock files
         shell: bash
         run: |
@@ -47,7 +51,7 @@ jobs:
           node --version | tee evidence/node-version.txt
           npm --version | tee evidence/npm-version.txt
           test "$(node --version)" = 'v24.19.0'
-          test "$(npm --version)" = '11.17.0'
+          test "$(npm --version)" = '12.0.2'
 
       - name: Install, test, audit, and build twice
         shell: bash
@@ -130,5 +134,4 @@ jobs:
         run: |
           set +e
           docker image rm -f "$TRIVY_IMAGE" 2>/dev/null
-          docker builder prune --all --force >/dev/null 2>&1
           rm -rf node_modules dist tmp

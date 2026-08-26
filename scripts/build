@@ -80,31 +80,34 @@ for str in "${JS_FILES[@]}"; do
   echo ";" >> "${DIST}/ui.js"
 done
 
-# Preserve the reviewed static layout assets without shipping Bootstrap's
-# executable plug-ins.  The CSS font path is made relative to the emitted
-# stylesheet so the local fixture and the Server's versioned route agree.
+# Use only the maintained Bootstrap layout CSS and Bootstrap Icons font. No
+# Bootstrap executable plug-in is shipped; modal and dropdown behavior remains
+# in the small first-party ui-compat boundary.
 mkdir -p \
   "${DIST}/fonts" \
-  "${DIST}/licenses/bootstrap-3.4.1" \
+  "${DIST}/licenses/bootstrap-5.3.8" \
+  "${DIST}/licenses/bootstrap-icons-1.13.1" \
   "${DIST}/licenses/jquery-4.0.0" \
   "${DIST}/licenses/handlebars-4.7.9" \
   "${DIST}/licenses/inherited-vendor"
-cp vendor/bootstrap-3.4.1/fonts/* "${DIST}/fonts/"
+cp node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff \
+  node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2 \
+  "${DIST}/fonts/"
 cp LICENSE.txt ORIGIN.md THIRD-PARTY-NOTICES.md "${DIST}/licenses/"
-cp vendor/bootstrap-3.4.1/LICENSE \
-  vendor/bootstrap-3.4.1/NORMALIZE-LICENSE \
-  vendor/bootstrap-3.4.1/NOTICE.md \
-  vendor/bootstrap-3.4.1/SHA256SUMS \
-  "${DIST}/licenses/bootstrap-3.4.1/"
+cp node_modules/bootstrap/LICENSE "${DIST}/licenses/bootstrap-5.3.8/LICENSE"
+cp node_modules/bootstrap-icons/LICENSE \
+  "${DIST}/licenses/bootstrap-icons-1.13.1/LICENSE"
 cp node_modules/jquery/LICENSE.txt "${DIST}/licenses/jquery-4.0.0/LICENSE.txt"
 cp node_modules/handlebars/LICENSE "${DIST}/licenses/handlebars-4.7.9/LICENSE"
 cp vendor/licenses/LICENSE-* vendor/licenses/NOTICE-* \
   "${DIST}/licenses/inherited-vendor/"
 find "${DIST}/licenses" -type f -exec sed -i 's/\r$//' {} +
 
-# Generate css
-sed 's@url("../fonts/@url("./fonts/@g' \
-  vendor/bootstrap-3.4.1/css/bootstrap.css > ./tmp/layout.css
+# Generate css. Both upstream stylesheets already resolve their assets from
+# the emitted root stylesheet to ./fonts/.
+cat node_modules/bootstrap/dist/css/bootstrap.css \
+  node_modules/bootstrap-icons/font/bootstrap-icons.css \
+  > ./tmp/layout.css
 cat ./tmp/layout.css \
   styles/main.scss \
   styles/explorer.scss \
