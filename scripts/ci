@@ -38,7 +38,7 @@ for (const section of ['dependencies', 'optionalDependencies']) {
 if (pkg.version !== '1.1.18') {
   fail('PACKAGE_RELEASE_VERSION_UNEXPECTED', `actual=${pkg.version}`);
 }
-if (!pkg.engines || pkg.engines.node !== '24.19.0') {
+if (!pkg.engines || pkg.engines.node !== '24.20.0') {
   fail('NODE_ENGINE_UNEXPECTED', `actual=${pkg.engines && pkg.engines.node}`);
 }
 if (pkg.packageManager !== 'npm@12.0.2') {
@@ -54,7 +54,7 @@ if (failures) {
   console.log(`failure_count=${failures}`);
   process.exit(1);
 }
-console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.19.0 npm=12.0.2 jquery=4.0.0 handlebars=4.7.9 bootstrap_css=5.3.8 bootstrap_icons=1.13.1 sass=1.103.1 jsdom=30.0.1 uglify-js=3.19.3 clean-css=5.3.3');
+console.log('API_EXPLORER_PACKAGE_METADATA_OK node=24.20.0 npm=12.0.2 jquery=4.0.0 handlebars=4.7.9 bootstrap_css=5.3.8 bootstrap_icons=1.13.1 sass=1.103.1 jsdom=30.0.1 uglify-js=3.19.3 clean-css=5.3.3');
 NODE
 
 test "$(node -p "require('bootstrap/package.json').version")" = 5.3.8
