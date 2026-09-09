@@ -10,7 +10,10 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The Server currently consumes the immutable `v1.1.17` release artifact. Version `1.1.18` is the reviewed dependency-refresh candidate and does not become the Server default until the coordinated embedded-server test passes. This repository does not publish a standalone CDN or npm package, and the explorer is supported only as a Server-embedded compatibility interface.
+The current immutable release is `v1.1.18`, and PastureStack Server `v1.6.410`
+consumes that exact artifact after the coordinated embedded-server test. This
+repository does not publish a standalone CDN or npm package, and the explorer
+is supported only as a Server-embedded compatibility interface.
 
 ## Build locally
 
