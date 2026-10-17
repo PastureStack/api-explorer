@@ -30,7 +30,7 @@
     "uglify-js": "3.19.3"
   },
   "dependencies": {
-    "handlebars": "4.7.9",
+    "handlebars": "4.7.10",
     "jquery": "4.0.0"
   }
 }
