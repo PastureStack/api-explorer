@@ -2,7 +2,10 @@
 
 ## Supported state
 
-Version `1.1.17` remains the supported Server-embedded compatibility release. Version `1.1.18` is the reviewed dependency-refresh candidate until the coordinated Server integration gate passes.
+Version `1.1.19` updates the build compiler and bundled runtime to Handlebars
+4.7.10, including the official fixes for CVE-2026-106444, CVE-2026-106445 and
+CVE-2026-106446. Server-embedded support follows the component version pinned
+by the coordinated Server release and its integration gate.
 
 ## Security boundaries
 

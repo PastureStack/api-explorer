@@ -88,7 +88,7 @@ mkdir -p \
   "${DIST}/licenses/bootstrap-5.3.8" \
   "${DIST}/licenses/bootstrap-icons-1.13.1" \
   "${DIST}/licenses/jquery-4.0.0" \
-  "${DIST}/licenses/handlebars-4.7.9" \
+  "${DIST}/licenses/handlebars-4.7.10" \
   "${DIST}/licenses/inherited-vendor"
 cp node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff \
   node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2 \
@@ -98,7 +98,7 @@ cp node_modules/bootstrap/LICENSE "${DIST}/licenses/bootstrap-5.3.8/LICENSE"
 cp node_modules/bootstrap-icons/LICENSE \
   "${DIST}/licenses/bootstrap-icons-1.13.1/LICENSE"
 cp node_modules/jquery/LICENSE.txt "${DIST}/licenses/jquery-4.0.0/LICENSE.txt"
-cp node_modules/handlebars/LICENSE "${DIST}/licenses/handlebars-4.7.9/LICENSE"
+cp node_modules/handlebars/LICENSE "${DIST}/licenses/handlebars-4.7.10/LICENSE"
 cp vendor/licenses/LICENSE-* vendor/licenses/NOTICE-* \
   "${DIST}/licenses/inherited-vendor/"
 find "${DIST}/licenses" -type f -exec sed -i 's/\r$//' {} +

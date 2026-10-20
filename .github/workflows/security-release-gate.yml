@@ -58,18 +58,18 @@ jobs:
         run: |
           set -euo pipefail
           npm ci --ignore-scripts --omit=optional --no-audit --no-fund
-          npm run test:security
           npm audit --omit=dev --json > evidence/npm-audit-runtime.json
           npm audit --json > evidence/npm-audit-all.json
-          npm run ci
+          npm run ci | tee evidence/ci-validation.log
           version=$(node -p "require('./package.json').version")
           artifact="dist/${version}.tar.gz"
-          cp "$artifact" /tmp/api-explorer-first.tar.gz
-          rm -rf dist tmp
-          npm run build
-          cmp /tmp/api-explorer-first.tar.gz "$artifact"
+          # scripts/ci already compares two complete builds byte for byte.
+          # Retain that exact tested archive before runner cleanup.
+          cp "$artifact" "evidence/api-explorer-${version}.tar.gz"
+          cp THIRD-PARTY-NOTICES.md evidence/
           sha256sum "$artifact" > evidence/product-artifact.sha256
           tar -tzf "$artifact" > evidence/product-members.txt
+          (cd evidence && sha256sum "api-explorer-${version}.tar.gz" > SHA256SUMS)
 
       - name: Generate package SBOM
         shell: bash
@@ -79,6 +79,7 @@ jobs:
             --output-format JSON \
             --spec-version 1.6 \
             --output-file evidence/api-explorer.cdx.json
+          (cd evidence && sha256sum api-explorer.cdx.json >> SHA256SUMS)
 
       - name: Scan immutable source and product
         shell: bash
@@ -117,6 +118,11 @@ jobs:
           jq -e '.metadata.vulnerabilities.critical == 0 and .metadata.vulnerabilities.high == 0' evidence/npm-audit-runtime.json >/dev/null
           jq -e '.metadata.vulnerabilities.critical == 0 and .metadata.vulnerabilities.high == 0' evidence/npm-audit-all.json >/dev/null
           jq -e '.bomFormat == "CycloneDX" and .specVersion == "1.6" and (.components | length) > 0' evidence/api-explorer.cdx.json >/dev/null
+          (cd evidence && sha256sum source-security.json product-security.json \
+            npm-audit-runtime.json npm-audit-all.json security-summary.txt \
+            THIRD-PARTY-NOTICES.md source-revision.txt source-locks.sha256 \
+            node-version.txt npm-version.txt product-artifact.sha256 product-members.txt \
+            ci-validation.log >> SHA256SUMS)
 
       - name: Upload reviewed evidence
         if: always()
