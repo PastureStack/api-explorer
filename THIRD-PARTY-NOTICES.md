@@ -18,8 +18,8 @@ and other subsequent modifications.
 
 - jQuery 4.0.0, copyright OpenJS Foundation and other contributors, MIT.
   The complete text is emitted as `licenses/jquery-4.0.0/LICENSE.txt`.
-- Handlebars Runtime 4.7.9, copyright Yehuda Katz and contributors, MIT.
-  The complete text is emitted as `licenses/handlebars-4.7.9/LICENSE`.
+- Handlebars Runtime 4.7.10, copyright Yehuda Katz and contributors, MIT.
+  The complete text is emitted as `licenses/handlebars-4.7.10/LICENSE`.
 - async 0.9.0, copyright Caolan McMahon, MIT. The retained text is
   [`vendor/licenses/LICENSE-async-0.9.0`](vendor/licenses/LICENSE-async-0.9.0).
 - jquery-scrollintoview 1.8, copyright Robert Koritnik, MIT. The retained text
