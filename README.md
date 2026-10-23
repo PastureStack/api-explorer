@@ -10,11 +10,17 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The current release is [`v1.1.19`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.19).
-Current source prepares `1.1.20` with the official Node.js `24.22.1`
+The current release is [`v1.1.20`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.20),
+built with the official Node.js `24.22.1`
 security release. The browser dependency graph and embedded API contract
 remain unchanged. CI verification uses Python `3.14.9`, pip `26.2.2`, and
 certifi `2026.10.19`, including pip's bundled copy.
+The original CI archive has SHA-256
+`c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb`
+and its public download reports signed producer `a586f0d` in `version.json`.
+[Exact-producer validation](https://github.com/PastureStack/api-explorer/actions/runs/39949986302)
+passed product/security tests, npm audit, two deterministic builds, SBOM, and
+source/product scans with zero Critical/High findings in their scanned scope.
 The explorer is supported only as a Server-embedded compatibility interface;
 this repository does not publish a standalone CDN or npm package. Use the
 [Server release documentation](https://github.com/PastureStack/server#readme)
