@@ -4,7 +4,7 @@ API Explorer preserves schema discovery, resource links, collection and action f
 
 Visible product naming and package ownership use PastureStack. Historical API resource names, schema fields, enum values, response links, and compatibility CSS hooks remain unchanged where supplied by or coupled to the remote API.
 
-Version `1.1.19` preserves the static archive layout, including `ui.min.js`,
+Version `1.1.20` preserves the static archive layout, including `ui.min.js`,
 `ui.min.css`, fonts, licenses and `version.json`, consumed by Server below
 `/api-ui/`. Server pins its own reviewed component version; changing that pin
 requires a coordinated embedded-server test.

@@ -11,6 +11,10 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
 The current release is [`v1.1.19`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.19).
+Current source prepares `1.1.20` with the official Node.js `24.22.1`
+security release. The browser dependency graph and embedded API contract
+remain unchanged. CI verification uses Python `3.14.9`, pip `26.2.2`, and
+certifi `2026.10.19`, including pip's bundled copy.
 The explorer is supported only as a Server-embedded compatibility interface;
 this repository does not publish a standalone CDN or npm package. Use the
 [Server release documentation](https://github.com/PastureStack/server#readme)
@@ -19,14 +23,14 @@ maintenance on `main` does not replace an existing immutable release.
 
 ## Build locally
 
-Requires Node.js 24.20.0 LTS and npm 12.0.2.
+Requires Node.js 24.22.1 LTS and npm 12.0.2.
 
 ```sh
 npm ci --no-audit --no-fund
 npm run ci
 ```
 
-The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.19.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
+The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.20.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
 
 Handlebars 4.7.10 supplies the official fixes for CVE-2026-106444,
 CVE-2026-106445 and CVE-2026-106446. Templates and partials are compiled from
