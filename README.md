@@ -13,8 +13,11 @@ This maintained compatibility release is based on the latest reviewed upstream `
 The current release is [`v1.1.20`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.20),
 built with the official Node.js `24.22.1`
 security release. The browser dependency graph and embedded API contract
-remain unchanged. CI verification uses Python `3.14.9`, pip `26.2.2`, and
-certifi `2026.10.19`, including pip's bundled copy.
+remain unchanged. CI verification uses Python `3.14.9`, the internal pip
+`26.2.2+pasturestack.1` rebuild with patched urllib3 `2.8.0`, and certifi
+`2026.10.19`. The frozen upstream-vendoring helper verifies all input and wheel
+hashes and runs streaming/TLS regressions in an isolated CI environment.
+This CI-only correction does not replace the existing release artifact.
 The original CI archive has SHA-256
 `c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb`
 and its public download reports signed producer `a586f0d` in `version.json`.
