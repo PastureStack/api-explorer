@@ -64,11 +64,55 @@ jobs:
           test "$(node --version)" = 'v24.22.1'
           test "$(npm --version)" = '12.0.2'
 
+      - name: Retain actual Node SDK and host Brotli inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          versions = json.loads(subprocess.check_output(
+              ["node", "-p", "JSON.stringify(process.versions)"], text=True))
+          assert versions["node"] == "24.22.1"
+          node = subprocess.check_output(["which", "node"], text=True).strip()
+          linkage = subprocess.check_output(["ldd", node], text=True)
+          assert "libbrotli" not in linkage, "Node unexpectedly uses host Brotli"
+          packages = []
+          inventory = subprocess.check_output(
+              ["dpkg-query", "-W", "-f=${Status}\t${binary:Package}\t${Version}\n"], text=True)
+          for line in inventory.splitlines():
+              status, name, version = line.split("\t")
+              if status.split()[-1] == "installed" and "brotli" in name:
+                  packages.append({"name": name, "version": version})
+          subprocess.run(["node", "-e", """
+          const z = require('node:zlib');
+          for (const input of [Buffer.alloc(0), Buffer.from('ordinary SDK control\\n'.repeat(32)), Buffer.from(Array.from({length:256}, (_,i)=>i))]) {
+            if (!z.brotliDecompressSync(z.brotliCompressSync(input)).equals(input)) process.exit(1);
+          }
+          """], check=True)
+          proof = {
+              "schemaVersion": 1, "sourceCommit": os.environ["GITHUB_SHA"],
+              "scope": "Ubuntu CI host and official Node SDK; not shipped browser runtime",
+              "nodeVersions": versions, "nodeDynamicLibraries": linkage.splitlines(),
+              "hostBrotliPackages": packages, "runnerImageVersion": os.environ.get("ImageVersion"),
+              "normalNodeBrotliRoundTrips": 3, "securityTriggerExecuted": False,
+              "hostPackagePresenceIsPatchOrReachabilityProof": False,
+          }
+          Path("evidence/builder-sdk-inventory.json").write_text(
+              json.dumps(proof, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          print("API_EXPLORER_NODE_SDK_OK " + json.dumps(proof, sort_keys=True))
+          PY
+
       - name: Install, test, audit, and build twice
         shell: bash
         run: |
           set -euo pipefail
           npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+          npm ls jsdom undici --all --json > evidence/jsdom-sdk-dependency-graph.json
+          cp package-lock.json evidence/package-lock.json
           npm audit --omit=dev --json > evidence/npm-audit-runtime.json
           npm audit --json > evidence/npm-audit-all.json
           npm run ci | tee evidence/ci-validation.log
@@ -133,7 +177,8 @@ jobs:
             npm-audit-runtime.json npm-audit-all.json security-summary.txt \
             THIRD-PARTY-NOTICES.md source-revision.txt source-locks.sha256 \
             node-version.txt npm-version.txt product-artifact.sha256 product-members.txt \
-            ci-validation.log >> SHA256SUMS)
+            ci-validation.log builder-sdk-inventory.json jsdom-sdk-dependency-graph.json \
+            package-lock.json >> SHA256SUMS)
 
       - name: Upload reviewed evidence
         if: always()
