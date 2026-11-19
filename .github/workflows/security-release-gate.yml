@@ -43,7 +43,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '24.22.1'
+          node-version: '24.22.3'
           cache: npm
 
       - name: Use the locked npm release
@@ -61,7 +61,7 @@ jobs:
           sha256sum package.json package-lock.json .github/workflows/*.yml > evidence/source-locks.sha256
           node --version | tee evidence/node-version.txt
           npm --version | tee evidence/npm-version.txt
-          test "$(node --version)" = 'v24.22.1'
+          test "$(node --version)" = 'v24.22.3'
           test "$(npm --version)" = '12.0.2'
 
       - name: Retain actual Node SDK and host Brotli inventory
@@ -76,7 +76,7 @@ jobs:
 
           versions = json.loads(subprocess.check_output(
               ["node", "-p", "JSON.stringify(process.versions)"], text=True))
-          assert versions["node"] == "24.22.1"
+          assert versions["node"] == "24.22.3"
           node = subprocess.check_output(["which", "node"], text=True).strip()
           linkage = subprocess.check_output(["ldd", node], text=True)
           assert "libbrotli" not in linkage, "Node unexpectedly uses host Brotli"
