@@ -32,7 +32,7 @@ maintenance on `main` does not replace an existing immutable release.
 
 ## Build locally
 
-Requires Node.js 24.22.1 LTS and npm 12.0.2.
+Requires Node.js 24.22.3 LTS and npm 12.0.2.
 
 ```sh
 npm ci --no-audit --no-fund
