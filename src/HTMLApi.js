@@ -128,7 +128,9 @@ HTMLApi.prototype.showModal = function(body,opt,cb)
   var modalHtml = Handlebars.templates['modal.hbs'](opt);
   var modal = $(modalHtml);
   this._reqModal = modal;
-  $('.modal-dialog',modal).css('width',opt.width||'750px');
+  if ( opt.width ) {
+    $('.modal-dialog',modal).css('max-width',opt.width);
+  }
   this.setModalActions(opt.actions);
   modal.on('keydown', this.onKeys);
   if ( cb )
@@ -1863,7 +1865,7 @@ HTMLApi.prototype.switchToTextarea = function(button)
 
   var val = $input.val();
 
-  var $textarea = $('<textarea>', {name: $input.attr('name') }).addClass('expandedTextarea');
+  var $textarea = $('<textarea>', {name: $input.attr('name') }).addClass('form-control expandedTextarea');
   $input.replaceWith($textarea);
   $textarea.val(val);
   $textarea.on('keydown', function(e) { if ( e.keyCode == 13 ) { e.stopPropagation(); return true; } });

@@ -10,25 +10,16 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The current release is [`v1.1.20`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.20),
-built with the official Node.js `24.22.1`
-security release. The browser dependency graph and embedded API contract
-remain unchanged. CI verification uses Python `3.14.9`, the internal pip
-`26.2.2+pasturestack.1` rebuild with patched urllib3 `2.8.0`, and certifi
-`2026.10.19`. The frozen upstream-vendoring helper verifies all input and wheel
-hashes and runs streaming/TLS regressions in an isolated CI environment.
-This CI-only correction does not replace the existing release artifact.
-The original CI archive has SHA-256
-`c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb`
-and its public download reports signed producer `a586f0d` in `version.json`.
-[Exact-producer validation](https://github.com/PastureStack/api-explorer/actions/runs/39949986302)
-passed product/security tests, npm audit, two deterministic builds, SBOM, and
-source/product scans with zero Critical/High findings in their scanned scope.
-The explorer is supported only as a Server-embedded compatibility interface;
-this repository does not publish a standalone CDN or npm package. Use the
-[Server release documentation](https://github.com/PastureStack/server#readme)
-for the current installation and its pinned component artifacts. Dependency
-maintenance on `main` does not replace an existing immutable release.
+The current public release is [`v1.1.20`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.20).
+Version `1.1.21` is the responsive request-form candidate on this branch.
+Inputs follow the available column width, narrow dialogs stack values below
+their labels, and long forms scroll inside the dialog while actions remain
+reachable. Password fields preserve their exact values and remain masked.
+
+The explorer is supported as a Server-embedded compatibility interface. Use the
+[Server installation documentation](https://github.com/PastureStack/server#readme)
+for the released Server and its exact component pins. Source changes do not
+replace an existing immutable release.
 
 ## Build locally
 
@@ -39,7 +30,7 @@ npm ci --no-audit --no-fund
 npm run ci
 ```
 
-The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.20.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
+The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.21.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
 
 Handlebars 4.7.10 supplies the official fixes for CVE-2026-106444,
 CVE-2026-106445 and CVE-2026-106446. Templates and partials are compiled from

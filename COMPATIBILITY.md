@@ -4,7 +4,7 @@ API Explorer preserves schema discovery, resource links, collection and action f
 
 Visible product naming and package ownership use PastureStack. Historical API resource names, schema fields, enum values, response links, and compatibility CSS hooks remain unchanged where supplied by or coupled to the remote API.
 
-Version `1.1.20` preserves the static archive layout, including `ui.min.js`,
+Version `1.1.21` preserves the static archive layout, including `ui.min.js`,
 `ui.min.css`, fonts, licenses and `version.json`, consumed by Server below
 `/api-ui/`. Server pins its own reviewed component version; changing that pin
 requires a coordinated embedded-server test.
@@ -22,3 +22,8 @@ compiler. Official CVE regressions, precompiled partials, escaped API text and
 both locales are checked without changing remote field or error values.
 
 Before release, validate read-only and mutating resources, actions, pagination, filters, authentication failures, HTML embedding, escaping, cross-origin behavior, and `en-US`/`zh-TW` selection against an isolated compatible server.
+
+Request dialogs support narrow viewports down to 320 CSS pixels. Text, password,
+reference, expanded text, map and array inputs remain inside their field. The
+footer stays accessible when a long form scrolls. Resizing preserves request
+preview, nullable controls, serialization and cancellation semantics.
