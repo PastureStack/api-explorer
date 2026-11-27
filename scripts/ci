@@ -35,7 +35,7 @@ for (const section of ['dependencies', 'optionalDependencies']) {
     }
   }
 }
-if (pkg.version !== '1.1.21') {
+if (pkg.version !== '1.1.22') {
   fail('PACKAGE_RELEASE_VERSION_UNEXPECTED', `actual=${pkg.version}`);
 }
 if (!pkg.engines || pkg.engines.node !== '24.22.3') {

@@ -222,142 +222,218 @@ text-align: left;
   color: #666;
 }
 
-#request-input TD {
-  border: 1px solid #f8f8f8;
-  overflow-wrap: anywhere;
-  padding: 8px;
-  vertical-align: top;
-}
-
-#request-input .field-name,
-#request-input .field-type {
-  width: 24%;
-}
-
-#request-input .field-value {
-  width: 52%;
-}
-
-#request-input INPUT,
-#request-input TEXTAREA {
-  display: inline-block;
-}
-
-#request-input .form-control:not([type="checkbox"]),
-#request-input .form-select {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-#request-input INPUT[type="checkbox"] {
-  width: auto;
-  padding: 0;
-  appearance: auto;
-}
-
-#request-input .dualValue {
-  margin-bottom: 8px;
-  max-width: 100%;
-  min-width: 0;
-}
-
-#request-input LABEL {
-  display: inline;
-}
-
-#request-input LABEL input[type="checkbox"] {
-  display: inline;
-  margin-right: 5px;
-}
-
-#request-input TEXTAREA {
-  height: 100px;
-  resize: vertical;
-  vertical-align: top;
-}
-
+/* Shared request editor: one native form system for create, edit and actions. */
 .api-request-modal {
+  --request-accent: #007da5;
+  --request-ink: #182b39;
+  --request-muted: #687d8c;
+  --request-border: #d8e2e8;
+  color: var(--request-ink);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   position: fixed;
 }
 
+.modal-backdrop { background-color: #142b3a; }
+.modal-backdrop.show { opacity: .5; }
+
 .api-request-modal .modal-dialog {
-  width: calc(100% - 32px);
-  max-width: 900px;
+  display: flex;
+  align-items: center;
+  width: calc(100% - 48px);
+  max-width: 780px;
+  min-height: calc(100vh - 48px);
   margin: 24px auto;
 }
 
 .api-request-modal .modal-content {
   max-height: calc(100vh - 48px);
+  border: 1px solid rgba(24, 43, 57, .08);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 24px 72px rgba(20, 43, 58, .24), 0 3px 12px rgba(20, 43, 58, .08);
+  overflow: hidden;
 }
 
-.api-request-modal .modal-header,
-.api-request-modal .modal-footer {
+.api-request-modal .modal-header {
+  padding: 22px 28px;
+  border-bottom: 1px solid #e4ebef;
   flex-shrink: 0;
+  gap: 20px;
 }
 
 .api-request-modal .modal-title {
   min-width: 0;
+  margin: 0;
   overflow-wrap: anywhere;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 650;
+  letter-spacing: -.4px;
 }
 
 .api-request-modal .btn-close {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 8px;
+  margin: -4px -8px -4px 0;
+  border-radius: 6px;
+  opacity: .65;
 }
+.api-request-modal .btn-close:hover { opacity: 1; background-color: #edf3f6; }
+.api-request-modal .btn-close:focus-visible { outline: 2px solid var(--request-accent); box-shadow: none; }
 
 .api-request-modal .modal-body {
+  padding: 8px 28px 24px;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
-.api-request-modal #request-output {
-  overflow-wrap: anywhere;
+.api-request-modal #request-input table,
+.api-request-modal #request-input tbody { display: block; width: 100%; }
+.api-request-modal #request-input tr {
+  display: grid;
+  grid-template-columns: minmax(132px, 180px) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  padding: 14px 0;
+  align-items: start;
+}
+.api-request-modal #request-input tr:has(th) { display: none; }
+.api-request-modal #request-input td { min-width: 0; border: 0; padding: 0; overflow-wrap: anywhere; }
+.api-request-modal #request-input .field-name {
+  grid-column: 1; grid-row: 1;
+  padding: 5px 18px 0 0;
+  font-size: 14px; font-weight: 650; line-height: 1.4;
+}
+.api-request-modal #request-input .field-name .required { color: #d43c4d; margin-right: 3px; }
+.api-request-modal #request-input .field-type {
+  grid-column: 1; grid-row: 2;
+  padding: 3px 18px 0 0;
+  font-size: 12px; line-height: 1.4;
+}
+.api-request-modal .inactive { color: var(--request-muted); }
+.api-request-modal #request-input .field-type a { color: var(--request-accent); text-decoration: none; }
+.api-request-modal #request-input .field-type a:hover { text-decoration: underline; }
+.api-request-modal #request-input .field-value { grid-column: 2; grid-row: 1 / span 2; }
+.api-request-modal #request-input td[colspan] { grid-column: 1 / -1; }
+
+.api-request-modal .field-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--request-border);
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
+.api-request-modal .field-editor:focus-within {
+  border-color: var(--request-accent);
+  box-shadow: 0 0 0 3px rgba(0, 125, 165, .13);
+}
+.api-request-modal .field-editor > .required { display: contents; }
+.api-request-modal #request-input .field-editor .form-control:not([type="checkbox"]),
+.api-request-modal #request-input .field-editor .form-select {
+  flex: 1 1 100px;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--request-ink);
+  box-shadow: none;
+  font: 400 14px/1.5 "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 9px 12px;
+}
+.api-request-modal #request-input .field-editor .form-select { padding-right: 36px; }
+.api-request-modal #request-input .field-editor .form-control::placeholder { color: #83939e; }
+.api-request-modal #request-input .field-editor textarea.form-control {
+  flex-basis: 100%;
+  width: 100%;
+  height: 108px;
+  resize: vertical;
+  vertical-align: top;
+}
+.api-request-modal #request-input .field-editor .key { flex-basis: 90px; background-color: #f6f9fb; }
+.api-request-modal .field-tools {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 12px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #516574;
+}
+.api-request-modal .field-tools:not(:has(> *)) { display: none; }
+.api-request-modal .field-editor:has(textarea) .field-tools { margin-left: auto; padding-bottom: 9px; }
+.api-request-modal .nullcheck { display: inline-flex; }
+.api-request-modal .nullcheck label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+.api-request-modal .nullcheck input[type="checkbox"] { appearance: auto; width: 14px; height: 14px; margin: 0; accent-color: var(--request-accent); }
+.api-request-modal .field-enlarge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 0 2px 10px;
+  border: 0; border-left: 1px solid #e4ebef; border-radius: 0;
+  background: transparent; color: #405b6c;
+  font: 400 12px/1.5 "Segoe UI", sans-serif;
+}
+.api-request-modal .field-enlarge:hover { color: var(--request-accent); }
+.api-request-modal .field-enlarge:focus-visible { outline: 2px solid var(--request-accent); outline-offset: 3px; border-radius: 3px; }
+.api-request-modal .field-enlarge .bi { font-size: 13px; }
+.api-request-modal .field-composite { display: block; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.api-request-modal .field-composite:focus-within { box-shadow: none; }
+.api-request-modal .dualValue { display: flex; gap: 8px; align-items: start; margin-bottom: 8px; min-width: 0; }
+.api-request-modal .dualValue > .field-editor { flex: 1; }
+.api-request-modal .field-composite .btn-inline { padding: 7px; border: 1px solid #d8e2e8; border-radius: 6px; background: #f5f8fa; color: #516574; }
 
+.api-request-modal .modal-footer {
+  flex-shrink: 0;
+  padding: 16px 28px;
+  border-top: 1px solid #e4ebef;
+  display: flex; justify-content: flex-end; gap: 12px;
+  background: #fff;
+}
+.api-request-modal .modal-footer > .btn {
+  margin: 0; min-height: 42px;
+  padding: 9px 20px; border-radius: 8px;
+  font: 600 14px/1.5 "Segoe UI", sans-serif;
+}
+.api-request-modal .modal-footer > .btn-primary { order: 2; border-color: var(--request-accent); background-color: var(--request-accent); }
+.api-request-modal .modal-footer > .btn-primary:hover { background-color: #006b8e; border-color: #006b8e; }
+.api-request-modal .modal-footer > .btn-link { order: 1; margin-right: auto; padding-left: 0; padding-right: 8px; color: #516574; text-decoration: none; }
+.api-request-modal .modal-footer > .btn-link:hover { color: var(--request-accent); }
+.api-request-modal #request-output { overflow-wrap: anywhere; min-width: 0; }
+
+@supports (height: 100dvh) {
+  .api-request-modal .modal-dialog { min-height: calc(100dvh - 48px); }
+  .api-request-modal .modal-content { max-height: calc(100dvh - 48px); }
+}
 @media (max-width: 575px) {
-  .api-request-modal .modal-dialog {
-    width: calc(100% - 16px);
-    margin: 8px auto;
+  .api-request-modal .modal-dialog { width: calc(100% - 16px); min-height: calc(100vh - 16px); margin: 8px auto; }
+  .api-request-modal .modal-content { max-height: calc(100vh - 16px); }
+  .api-request-modal .modal-header { padding: 18px 20px; gap: 12px; }
+  .api-request-modal .modal-title { font-size: 20px; letter-spacing: -.2px; }
+  .api-request-modal .modal-body { padding: 6px 18px 18px; }
+  .api-request-modal #request-input tr { grid-template-columns: minmax(0, 1fr) auto; padding: 10px 0; }
+  .api-request-modal #request-input .field-name { grid-row: 1; padding: 0 12px 0 0; }
+  .api-request-modal #request-input .field-type { grid-column: 2; grid-row: 1; padding: 1px 0 0; text-align: end; max-width: 170px; }
+  .api-request-modal #request-input .field-value { grid-column: 1 / -1; grid-row: 2; margin-top: 8px; }
+  .api-request-modal .field-editor:has(.field-enlarge) .field-tools { flex-basis: 100%; justify-content: flex-end; padding-top: 0; }
+  .api-request-modal .modal-footer { padding: 14px 18px; }
+  .api-request-modal .modal-footer > .btn { padding-left: 16px; padding-right: 16px; }
+  @supports (height: 100dvh) {
+    .api-request-modal .modal-dialog { min-height: calc(100dvh - 16px); }
+    .api-request-modal .modal-content { max-height: calc(100dvh - 16px); }
   }
-
-  .api-request-modal .modal-content {
-    max-height: calc(100vh - 16px);
-  }
-
-  .api-request-modal #request-input TABLE,
-  .api-request-modal #request-input TBODY {
-    display: block;
-  }
-
-  .api-request-modal #request-input TR {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    margin-bottom: 8px;
-  }
-
-  .api-request-modal #request-input TR:has(TH) {
-    display: none;
-  }
-
-  .api-request-modal #request-input TD {
-    width: auto;
-    min-width: 0;
-  }
-
-  .api-request-modal #request-input .field-name {
-    font-weight: bold;
-  }
-
-  .api-request-modal #request-input .field-type {
-    text-align: end;
-  }
-
-  .api-request-modal #request-input .field-value,
-  .api-request-modal #request-input TD[colspan] {
-    grid-column: 1 / -1;
-  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .api-request-modal *, .api-request-modal { transition: none !important; animation: none !important; }
 }
 
 #curl,
