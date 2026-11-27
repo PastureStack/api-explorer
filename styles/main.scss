@@ -402,13 +402,13 @@ text-align: left;
   background: #fff;
 }
 .api-request-modal .modal-footer > .btn {
-  margin: 0; min-height: 42px;
+  order: 1; margin: 0; min-height: 42px;
   padding: 9px 20px; border-radius: 8px;
   font: 600 14px/1.5 "Segoe UI", sans-serif;
 }
 .api-request-modal .modal-footer > .btn-primary { order: 2; border-color: var(--request-accent); background-color: var(--request-accent); }
 .api-request-modal .modal-footer > .btn-primary:hover { background-color: #006b8e; border-color: #006b8e; }
-.api-request-modal .modal-footer > .btn-link { order: 1; margin-right: auto; padding-left: 0; padding-right: 8px; color: #516574; text-decoration: none; }
+.api-request-modal .modal-footer > .btn-link { order: 0; margin-right: auto; padding-left: 0; padding-right: 8px; color: #516574; text-decoration: none; }
 .api-request-modal .modal-footer > .btn-link:hover { color: var(--request-accent); }
 .api-request-modal #request-output { overflow-wrap: anywhere; min-width: 0; }
 
