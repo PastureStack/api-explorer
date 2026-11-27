@@ -185,7 +185,11 @@ HTMLApi.prototype.setModalActions = function(actions)
   this._reqModal._actions = actions;
   var html = '';
 
-  actions.forEach(function(action) {
+  // Keep visual and keyboard order aligned without mutating action ownership.
+  var displayActions = actions.slice().sort(function(a, b) {
+    return (a.cancel ? -1 : a.primary ? 1 : 0) - (b.cancel ? -1 : b.primary ? 1 : 0);
+  });
+  displayActions.forEach(function(action) {
     var color = 'btn-secondary';
     var btnType = 'button'
     if ( action.primary ) {

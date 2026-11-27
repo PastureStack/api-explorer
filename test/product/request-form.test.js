@@ -32,6 +32,17 @@ for (const bundle of ['ui.js', 'ui.min.js']) {
         const body = w.Handlebars.templates['edit.hbs']({fields, hasFields: true, mode: 'create'});
         w.document.body.innerHTML = w.Handlebars.templates['modal.hbs']({title: 'Create registryCredential', body});
         api._reqModal = w.jQuery('.modal');
+        const actions = [
+          {id: 'ok', text: w.PastureStackI18n.text('showRequest'), primary: true},
+          {id: 'cancel', text: w.PastureStackI18n.text('cancel'), cancel: true}
+        ];
+        api.setModalActions(actions);
+        assert.equal(actions[0].id, 'ok');
+        const footerButtons = w.document.querySelectorAll('.modal-footer button');
+        assert.equal(footerButtons[0].textContent, locale === 'zh-TW' ? '取消' : 'Cancel');
+        assert.equal(footerButtons[0].type, 'button');
+        assert.equal(footerButtons[1].type, 'submit');
+        assert.equal(footerButtons[1].textContent, locale === 'zh-TW' ? '檢視請求' : 'Show Request');
         api._editSchema = schema;
         api._editData = {};
         api._magicNull = '__-*NULL*-__';
