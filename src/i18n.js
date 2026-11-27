@@ -3,6 +3,7 @@
 
   var messages = {
     "en-US": {
+      sendRequest: "Send Request", backToEdit: "Back to Edit", showRequest: "Show Request", cancel: "Cancel", close: "Close", enlarge: "Enlarge", nullValueHelp: "Send an explicit null value",
       operations: "Operations", up: "Up", reload: "Reload", create: "Create",
       edit: "Edit", remove: "Delete", actions: "Actions", none: "None",
       filter: "Filter", sortBy: "Sort By", notSorted: "(Not Sorted)",
@@ -22,6 +23,7 @@
       selectedCount: "items are selected", language: "Language", explorerView: "Explorer View"
     },
     "zh-TW": {
+      sendRequest: "送出請求", backToEdit: "返回編輯", showRequest: "檢視請求", cancel: "取消", close: "關閉", enlarge: "展開", nullValueHelp: "傳送明確的 null 值",
       operations: "操作", up: "上一層", reload: "重新載入", create: "建立",
       edit: "編輯", remove: "刪除", actions: "動作", none: "無",
       filter: "篩選", sortBy: "排序欄位", notSorted: "（未排序）",

@@ -6,6 +6,7 @@ const path = require('node:path');
 const test = require('node:test');
 const {JSDOM} = require('jsdom');
 const version = require('../../package.json').version;
+function checkLabel(input) { return input.closest('.field-editor').querySelector('.nullcheck label').title; }
 
 for (const bundle of ['ui.js', 'ui.min.js']) {
   for (const locale of ['en-US', 'zh-TW']) {
@@ -31,6 +32,17 @@ for (const bundle of ['ui.js', 'ui.min.js']) {
         const body = w.Handlebars.templates['edit.hbs']({fields, hasFields: true, mode: 'create'});
         w.document.body.innerHTML = w.Handlebars.templates['modal.hbs']({title: 'Create registryCredential', body});
         api._reqModal = w.jQuery('.modal');
+        const actions = [
+          {id: 'ok', text: w.PastureStackI18n.text('showRequest'), primary: true},
+          {id: 'cancel', text: w.PastureStackI18n.text('cancel'), cancel: true}
+        ];
+        api.setModalActions(actions);
+        assert.equal(actions[0].id, 'ok');
+        const footerButtons = w.document.querySelectorAll('.modal-footer button');
+        assert.equal(footerButtons[0].textContent, locale === 'zh-TW' ? '取消' : 'Cancel');
+        assert.equal(footerButtons[0].type, 'button');
+        assert.equal(footerButtons[1].type, 'submit');
+        assert.equal(footerButtons[1].textContent, locale === 'zh-TW' ? '檢視請求' : 'Show Request');
         api._editSchema = schema;
         api._editData = {};
         api._magicNull = '__-*NULL*-__';
@@ -42,13 +54,15 @@ for (const bundle of ['ui.js', 'ui.min.js']) {
         assert.equal(api.getFormValues('create', 'POST', schema).body.secretValue, secret);
         assert.equal(api.getFormValues('create', 'POST', schema).body.registryId, '1sp1');
         assert.equal(w.document.querySelectorAll('tr:has(td.field-value)').length, fields.length);
-        const expand = w.document.querySelector('input[name=field_description]').parentElement.querySelector('a');
+        const expand = w.document.querySelector('input[name=field_description]').closest('.field-editor').querySelector('.field-enlarge');
         api.switchToTextarea(expand);
         const area = w.document.querySelector('textarea[name=field_description]');
         assert.equal(area.value, 'kept description');
         assert.ok(area.classList.contains('form-control'));
+        assert.equal(w.document.querySelectorAll('.field-enlarge').length, 0);
+        assert.equal(checkLabel(input), locale === 'zh-TW' ? '傳送明確的 null 值' : 'Send an explicit null value');
         assert.equal(api.getFormValues('create', 'POST', schema).body.description, 'kept description');
-        const check = area.parentElement.querySelector('input[type=checkbox]');
+        const check = area.closest('.field-editor').querySelector('input[type=checkbox]');
         check.checked = true;
         api.toggleNull(check);
         assert.equal(area.value, '');

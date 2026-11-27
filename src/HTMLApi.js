@@ -185,7 +185,11 @@ HTMLApi.prototype.setModalActions = function(actions)
   this._reqModal._actions = actions;
   var html = '';
 
-  actions.forEach(function(action) {
+  // Keep visual and keyboard order aligned without mutating action ownership.
+  var displayActions = actions.slice().sort(function(a, b) {
+    return (a.cancel ? -1 : a.primary ? 1 : 0) - (b.cancel ? -1 : b.primary ? 1 : 0);
+  });
+  displayActions.forEach(function(action) {
     var color = 'btn-secondary';
     var btnType = 'button'
     if ( action.primary ) {
@@ -540,8 +544,8 @@ HTMLApi.prototype.actionLoad = function(name, obj, body)
 
       var html = Handlebars.templates['edit.hbs'](tpl);
       var popinActions = [
-        {id: 'ok',      text: 'Show Request', primary: true, onClick: function() { self.showRequest(mode,'POST',actionInput,retry,url); }.bind(self) },
-        {id: 'cancel',  text: 'Cancel', cancel: true }
+        {id: 'ok',      text: window.PastureStackI18n.text('showRequest'), primary: true, onClick: function() { self.showRequest(mode,'POST',actionInput,retry,url); }.bind(self) },
+        {id: 'cancel',  text: window.PastureStackI18n.text('cancel'), cancel: true }
       ];
 
 
@@ -973,7 +977,7 @@ HTMLApi.prototype.request = function(method,body,opt,really)
   if ( really )
   {
     this.setModalActions([
-      {id: 'cancel', text: 'Cancel', cancel: true}
+      {id: 'cancel', text: window.PastureStackI18n.text('cancel'), cancel: true}
     ]);
 
     $('#notsent').hide();
@@ -1045,12 +1049,12 @@ HTMLApi.prototype.request = function(method,body,opt,really)
 
   var actions = [];
 
-  actions.push({id: 'ok',      text: 'Send Request', primary: true, onClick: function() { self.request(method,body,opt,true); } });
+  actions.push({id: 'ok',      text: window.PastureStackI18n.text('sendRequest'), primary: true, onClick: function() { self.request(method,body,opt,true); } });
 
   if ( this._lastOpt && this._lastOpt.retry )
-    actions.push({id: 'edit', text: 'Back to Edit', onClick: this._lastOpt.retry.bind(this,body) });
+    actions.push({id: 'edit', text: window.PastureStackI18n.text('backToEdit'), onClick: this._lastOpt.retry.bind(this,body) });
 
-  actions.push({id: 'cancel',  text: 'Cancel', cancel: true});
+  actions.push({id: 'cancel',  text: window.PastureStackI18n.text('cancel'), cancel: true});
 
   self.showModal(html, {
     destroyOnClose: false,
@@ -1123,7 +1127,7 @@ HTMLApi.prototype.requestDone = function(err, body, res)
   var popinActions = [
       {id: 'reload',  text: 'Reload', onClick: this.reload.bind(this)},
       {id: 'up',      text: 'Go Up',  onClick: function() { this.up(); }.bind(this) },
-      {id: 'cancel',  text: 'Close',  cancel: true}
+      {id: 'cancel',  text: window.PastureStackI18n.text('close'),  cancel: true}
   ];
 
   if ( loc )
@@ -1324,12 +1328,12 @@ HTMLApi.prototype.showEdit = function(data,update,schema,url)
       self.showEdit(body||self._lastRequestBody||data, update, schema, url);
     }
 
-    var title = (update ? 'Edit' : 'Create') +' '+ schema.id;
+    var title = window.PastureStackI18n.text(update ? 'edit' : 'create') +' '+ schema.id;
     var html = Handlebars.templates['edit.hbs'](tpl);
     var method = (update ? 'PUT' : 'POST');
     var popinActions = [
-      {id: 'ok',      text: 'Show Request', primary: true, onClick: function() { self.showRequest(mode, method,schema,retry,url); }.bind(self) },
-      {id: 'cancel',  text: 'Cancel', cancel: true }
+      {id: 'ok',      text: window.PastureStackI18n.text('showRequest'), primary: true, onClick: function() { self.showRequest(mode, method,schema,retry,url); }.bind(self) },
+      {id: 'cancel',  text: window.PastureStackI18n.text('cancel'), cancel: true }
     ];
 
     self.showModal(html, {
@@ -1857,19 +1861,20 @@ HTMLApi.prototype.toggleNull = function(check)
 HTMLApi.prototype.switchToTextarea = function(button)
 {
   var $button = $(button);
-  var $par = $($button.parent());
-  var $input = $('INPUT[type="text"]', $par);
+  var $par = $button.closest('.field-editor');
+  if ( !$par.length ) $par = $button.parent();
+  var $input = $('INPUT[type="text"]:not(.key)', $par).first();
 
   if ( !$input[0] )
     return;
 
   var val = $input.val();
 
-  var $textarea = $('<textarea>', {name: $input.attr('name') }).addClass('form-control expandedTextarea');
+  var $textarea = $('<textarea>', {name: $input.attr('name'), 'aria-label': $input.attr('aria-label'), placeholder: $input.attr('placeholder') }).addClass('form-control expandedTextarea');
   $input.replaceWith($textarea);
   $textarea.val(val);
   $textarea.on('keydown', function(e) { if ( e.keyCode == 13 ) { e.stopPropagation(); return true; } });
-  $button.hide();
+  $button.remove();
 }
 
 HTMLApi.prototype.setLocalCookie = function(on,min) {

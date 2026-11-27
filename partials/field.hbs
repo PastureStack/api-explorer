@@ -1,3 +1,4 @@
+<div class="field-editor {{#ifInList type 'array,map'}}field-composite{{/ifInList}}">
 {{#ifInList type 'array,map'}}
   {{#each children}}
     <div class="dualValue">
@@ -18,22 +19,22 @@
 {{/if}}
 
 {{#ifInList type 'string,date,base64,dnsLabel,dnsLabelRestricted,hostname'}}
-  <input type="text" class="form-control" name="{{formFieldName}}" value="{{value}}" placeholder="{{placeholder}}"/>
+  <input type="text" class="form-control" name="{{formFieldName}}" aria-label="{{name}}" value="{{value}}" placeholder="{{placeholder}}"/>
 {{/ifInList}}
 
 {{#ifEqual type 'json'}}
-  <textarea class="form-control" name="{{formFieldName}}">{{value}}</textarea>
+  <textarea class="form-control" name="{{formFieldName}}" aria-label="{{name}}">{{value}}</textarea>
 {{/ifEqual}}
 
 {{#ifInList type 'password,masked'}}
-  <input type="password" class="form-control" name="{{formFieldName}}" value="{{value}}" placeholder="{{placeholder}}" />
+  <input type="password" class="form-control" name="{{formFieldName}}" aria-label="{{name}}" value="{{value}}" placeholder="{{placeholder}}" />
 {{/ifInList}}
 
 {{#ifInList type 'number,int,float'}}
   <input 
     type="number"
     class="form-control"
-    name="{{formFieldName}}"
+    name="{{formFieldName}}" aria-label="{{name}}"
     value="{{value}}"
     placeholder="{{placeholder}}"
     {{#ifEqual field.min undefined}} {{else}} min="{{field.min}}"{{/ifEqual}}
@@ -43,23 +44,23 @@
 {{/ifInList}}
 
 {{#ifEqual type "blob"}}
-  <input type="file" class="form-control" name="{{formFieldName}}" />
+  <input type="file" class="form-control" name="{{formFieldName}}" aria-label="{{name}}" />
 {{/ifEqual}}
 
 {{#ifEqual type "boolean"}}
   {{#if field.nullable}}
-    <select name="{{formFieldName}}" class="form-select">
+    <select name="{{formFieldName}}" aria-label="{{name}}" class="form-select">
       <option value="__-*NULL*-__" {{#ifEqual null ../value}} SELECTED{{/ifEqual}}>NULL</option>
       <option value="" {{#ifEqual false ../value}} SELECTED{{/ifEqual}}>false</option>
       <option value="1" {{#ifEqual true ../value}} SELECTED{{/ifEqual}}>true</option>
     </select>
   {{else}}
-    <input type="checkbox" class="form-control" name="{{formFieldName}}" value="1" {{#if value}} CHECKED{{/if}} />
+    <input type="checkbox" class="form-control" name="{{formFieldName}}" aria-label="{{name}}" value="1" {{#if value}} CHECKED{{/if}} />
   {{/if}}
 {{/ifEqual}}
 
 {{#ifEqual type "enum"}}
-  <select name="{{formFieldName}}" class="form-select">
+  <select name="{{formFieldName}}" aria-label="{{name}}" class="form-select">
     {{#if field.nullable}}
       <option value="__-*NULL*-__">NULL</option>
     {{/if}}
@@ -71,7 +72,7 @@
 
 {{#ifEqual type "reference"}}
   {{#if field.options}}
-    <select name="{{formFieldName}}" class="form-select">
+    <select name="{{formFieldName}}" aria-label="{{name}}" class="form-select">
       {{#if field.nullable}}
         <option value="__-*NULL*-__">NULL</option>
       {{/if}}
@@ -84,12 +85,12 @@
       {{/ifInMap}}
     </select>
   {{else}}
-    <input type="text" class="form-control" name="{{formFieldName}}" value="{{value}}">
+    <input type="text" class="form-control" name="{{formFieldName}}" aria-label="{{name}}" value="{{value}}">
   {{/if}}
 {{/ifEqual}}
 
 {{#ifEqual type "__type__"}}
-  <select name="{{formFieldName}}" class="form-select" onchange="htmlapi.createTypeChanged($(this).val());">
+  <select name="{{formFieldName}}" aria-label="{{name}}" class="form-select" onchange="htmlapi.createTypeChanged($(this).val());">
     {{#each field.options}}
       <option value="{{this}}" {{#ifEqual this ../value}} SELECTED{{/ifEqual}}>{{this}}</option>
       <!-- {{this}} , {{../value}} -->
@@ -101,21 +102,23 @@
   </span>
 {{/if}}
 
-{{#if enlargeable}}
-  <a class="btn btn-secondary btn-sm btn-inline" onclick="htmlapi.switchToTextarea(this);" tabindex="-1" title="Enlarge"><i class="bi bi-arrows-fullscreen"></i></a>
-{{/if}}
-
-{{#if nullCheck}}
-  <div class="nullcheck">
-    <label>
-      <input type="checkbox" name="{{formFieldNameNull}}" value="1" tabindex="-1" onclick="htmlapi.toggleNull(this);" {{#ifEqual null value}} CHECKED{{/ifEqual}}>NULL
-    </label>
-  </div>
-{{/if}}
+<div class="field-tools">
+  {{#if nullCheck}}
+    <div class="nullcheck">
+      <label title="{{t 'nullValueHelp'}}">
+        <input type="checkbox" name="{{formFieldNameNull}}" value="1" onclick="htmlapi.toggleNull(this);" {{#ifEqual null value}} CHECKED{{/ifEqual}}>NULL
+      </label>
+    </div>
+  {{/if}}
+  {{#if enlargeable}}
+    <button type="button" class="field-enlarge" onclick="htmlapi.switchToTextarea(this);" title="{{t 'enlarge'}}"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i><span>{{t 'enlarge'}}</span></button>
+  {{/if}}
+</div>
 
 {{#unless addingField}}
   {{#ifInList type 'array,map'}}
       <a class="btn btn-secondary btn-sm btn-inline" tabindex="-1" onclick="htmlapi.subAdd(this,'{{name}}');"><i class="bi bi-plus"></i></a>
-    </div>
   {{/ifInList}}
 {{/unless}}
+
+</div>
