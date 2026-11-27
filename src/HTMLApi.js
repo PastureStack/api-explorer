@@ -1870,7 +1870,7 @@ HTMLApi.prototype.switchToTextarea = function(button)
   $input.replaceWith($textarea);
   $textarea.val(val);
   $textarea.on('keydown', function(e) { if ( e.keyCode == 13 ) { e.stopPropagation(); return true; } });
-  $button.hide();
+  $button.remove();
 }
 
 HTMLApi.prototype.setLocalCookie = function(on,min) {
