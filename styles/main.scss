@@ -235,7 +235,7 @@ text-align: left;
   position: fixed;
 }
 
-.modal-backdrop { background-color: #142b3a; }
+.modal-backdrop { background-color: #142b3a; backdrop-filter: blur(3px); }
 .modal-backdrop.show { opacity: .5; }
 
 .api-request-modal .modal-dialog {
@@ -260,12 +260,14 @@ text-align: left;
   padding: 22px 28px;
   border-bottom: 1px solid #e4ebef;
   flex-shrink: 0;
+  justify-content: space-between;
   gap: 20px;
 }
 
 .api-request-modal .modal-title {
   min-width: 0;
   margin: 0;
+  color: var(--request-ink);
   overflow-wrap: anywhere;
   font-size: 24px;
   line-height: 1.25;
@@ -278,7 +280,7 @@ text-align: left;
   width: 16px;
   height: 16px;
   padding: 8px;
-  margin: -4px -8px -4px 0;
+  margin: -4px -8px -4px auto;
   border-radius: 6px;
   opacity: .65;
 }
@@ -374,11 +376,11 @@ text-align: left;
 .api-request-modal .field-tools:not(:has(> *)) { display: none; }
 .api-request-modal .field-editor:has(textarea) .field-tools { margin-left: auto; padding-bottom: 9px; }
 .api-request-modal .nullcheck { display: inline-flex; }
-.api-request-modal .nullcheck label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+.api-request-modal .nullcheck label { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; cursor: pointer; white-space: nowrap; }
 .api-request-modal .nullcheck input[type="checkbox"] { appearance: auto; width: 14px; height: 14px; margin: 0; accent-color: var(--request-accent); }
 .api-request-modal .field-enlarge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 2px 0 2px 10px;
+  min-height: 28px; padding: 2px 0 2px 10px;
   border: 0; border-left: 1px solid #e4ebef; border-radius: 0;
   background: transparent; color: #405b6c;
   font: 400 12px/1.5 "Segoe UI", sans-serif;
@@ -477,4 +479,8 @@ text-align: left;
 
 .btn-inline {
   display: inline-block;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .modal-backdrop { backdrop-filter: none; }
 }
