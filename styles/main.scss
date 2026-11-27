@@ -224,7 +224,18 @@ text-align: left;
 
 #request-input TD {
   border: 1px solid #f8f8f8;
-  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  padding: 8px;
+  vertical-align: top;
+}
+
+#request-input .field-name,
+#request-input .field-type {
+  width: 24%;
+}
+
+#request-input .field-value {
+  width: 52%;
 }
 
 #request-input INPUT,
@@ -232,24 +243,24 @@ text-align: left;
   display: inline-block;
 }
 
-#request-input INPUT[type="text"],
-#request-input INPUT[type="number"],
-#request-input INPUT[type="password"] {
-  width: 250px;
+#request-input .form-control:not([type="checkbox"]),
+#request-input .form-select {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
-#request-input .dualValue INPUT[type="text"],
-#request-input .dualValue INPUT[type="number"],
-#request-input .dualValue INPUT[type="password"] {
-  width: 180px;
+#request-input INPUT[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  appearance: auto;
 }
 
-#request-input .dualValue INPUT.key {
-  width: 100px;
-}
-
-#request-input SELECT {
-  max-width: 250px;
+#request-input .dualValue {
+  margin-bottom: 8px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 #request-input LABEL {
@@ -262,13 +273,91 @@ text-align: left;
 }
 
 #request-input TEXTAREA {
-  width: 250px;
   height: 100px;
+  resize: vertical;
   vertical-align: top;
 }
 
-#request-input .dualValue TEXTAREA {
-  width: 150px;
+.api-request-modal {
+  position: fixed;
+}
+
+.api-request-modal .modal-dialog {
+  width: calc(100% - 32px);
+  max-width: 900px;
+  margin: 24px auto;
+}
+
+.api-request-modal .modal-content {
+  max-height: calc(100vh - 48px);
+}
+
+.api-request-modal .modal-header,
+.api-request-modal .modal-footer {
+  flex-shrink: 0;
+}
+
+.api-request-modal .modal-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.api-request-modal .btn-close {
+  flex-shrink: 0;
+}
+
+.api-request-modal .modal-body {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.api-request-modal #request-output {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 575px) {
+  .api-request-modal .modal-dialog {
+    width: calc(100% - 16px);
+    margin: 8px auto;
+  }
+
+  .api-request-modal .modal-content {
+    max-height: calc(100vh - 16px);
+  }
+
+  .api-request-modal #request-input TABLE,
+  .api-request-modal #request-input TBODY {
+    display: block;
+  }
+
+  .api-request-modal #request-input TR {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin-bottom: 8px;
+  }
+
+  .api-request-modal #request-input TR:has(TH) {
+    display: none;
+  }
+
+  .api-request-modal #request-input TD {
+    width: auto;
+    min-width: 0;
+  }
+
+  .api-request-modal #request-input .field-name {
+    font-weight: bold;
+  }
+
+  .api-request-modal #request-input .field-type {
+    text-align: end;
+  }
+
+  .api-request-modal #request-input .field-value,
+  .api-request-modal #request-input TD[colspan] {
+    grid-column: 1 / -1;
+  }
 }
 
 #curl,
