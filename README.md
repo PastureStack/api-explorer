@@ -10,10 +10,13 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The current public release is [`v1.1.21`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.21).
-Inputs follow the available column width, narrow dialogs stack values below
-their labels, and long forms scroll inside the dialog while actions remain
-reachable. Password fields preserve their exact values and remain masked.
+The current public release is [`v1.1.22`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.22).
+Request dialogs use a shared responsive form: clear field labels and type hints,
+inset controls, and a fixed action footer. Narrow dialogs place editors below
+their labels; long forms scroll within the dialog. Preview, cancel, expand,
+create, edit and action forms share the same layout. Password values remain
+masked and are preserved exactly. English and Traditional Chinese interface
+labels are supported; API field identities and request semantics are unchanged.
 
 The explorer is supported as a Server-embedded compatibility interface. Use the
 [Server installation documentation](https://github.com/PastureStack/server#readme)
@@ -29,7 +32,7 @@ npm ci --no-audit --no-fund
 npm run ci
 ```
 
-The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.21.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
+The tracked npm lockfile is the executable dependency contract. The CI command runs security and product tests and compares two complete builds byte for byte. The build emits a deterministic `dist/1.1.22.tar.gz`: file order, modes, ownership, timestamps, and the gzip header are normalized from the source commit. Source maps are excluded from the embedded release artifact. The security release gate retains the tested archive, SBOM, scans and SHA256SUMS for publication without rebuilding.
 
 Handlebars 4.7.10 supplies the official fixes for CVE-2026-106444,
 CVE-2026-106445 and CVE-2026-106446. Templates and partials are compiled from
