@@ -10,8 +10,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 This maintained compatibility release is based on the latest reviewed upstream `master`, including current Node and dependency maintenance. Package metadata, visible branding, and repository links use PastureStack naming. Existing API schema fields and discovery behavior remain compatible.
 
-The current public release is [`v1.1.20`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.20).
-Version `1.1.21` is the responsive request-form candidate on this branch.
+The current public release is [`v1.1.21`](https://github.com/PastureStack/api-explorer/releases/tag/v1.1.21).
 Inputs follow the available column width, narrow dialogs stack values below
 their labels, and long forms scroll inside the dialog while actions remain
 reachable. Password fields preserve their exact values and remain masked.
